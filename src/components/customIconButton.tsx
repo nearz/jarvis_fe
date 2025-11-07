@@ -8,7 +8,7 @@ import type { ButtonHTMLAttributes, ReactNode } from "react";
 
 interface CBTProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   icon: ReactNode;
-  text?: String;
+  text?: string;
   variant: ConditionalValue<
     "outline" | "solid" | "subtle" | "surface" | "ghost" | "plain" | undefined
   >;

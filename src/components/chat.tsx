@@ -42,8 +42,6 @@ function Chat() {
         </Box>
       </Box>
       <ChatTools
-        bg="teal.400"
-        h="100%"
         transition="all 0.3s"
         transform={ctOpen ? "translateX(0)" : "translateX(100%)"}
       />

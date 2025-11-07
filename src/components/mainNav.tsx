@@ -21,6 +21,10 @@ function MainNav() {
         left="70px"
         top="0"
         bottom="0"
+        w="200px"
+        h="100%"
+        m={0}
+        p={0}
         zIndex={1}
         transition="all 0.3s"
         transform={activeTray === "one" ? "translateX(0)" : "translateX(-100%)"}
@@ -33,6 +37,10 @@ function MainNav() {
         left="70px"
         top="0"
         bottom="0"
+        w="200px"
+        h="100%"
+        m={0}
+        p={0}
         zIndex={1}
         transition="all 0.3s"
         transform={activeTray === "two" ? "translateX(0)" : "translateX(-100%)"}
