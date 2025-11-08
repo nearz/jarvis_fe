@@ -10,10 +10,10 @@ import CustomIconButton from "./customIconButton";
 import { FaPlus } from "react-icons/fa6";
 
 interface ChatHeaderProps extends BoxProps {
-  onCTToggle: () => void;
+  onChatToolsToggle: () => void;
 }
 
-function ChatHeader({ onCTToggle }: ChatHeaderProps) {
+function ChatHeader({ onChatToolsToggle }: ChatHeaderProps) {
   return (
     <Box w="100%">
       <HStack m={2}>
@@ -30,7 +30,7 @@ function ChatHeader({ onCTToggle }: ChatHeaderProps) {
             size="xs"
             variant="solid"
             icon={<FaPlus />}
-            onClick={onCTToggle}
+            onClick={onChatToolsToggle}
           />
         </Flex>
       </HStack>

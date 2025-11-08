@@ -6,7 +6,8 @@ import {
 } from "@chakra-ui/react";
 import type { ButtonHTMLAttributes, ReactNode } from "react";
 
-interface CBTProps extends ButtonHTMLAttributes<HTMLButtonElement> {
+interface CustomIconButtonProps
+  extends ButtonHTMLAttributes<HTMLButtonElement> {
   icon: ReactNode;
   text?: string;
   variant: ConditionalValue<
@@ -17,7 +18,13 @@ interface CBTProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   >;
 }
 
-function CustomIconButton({ text, icon, size, variant, onClick }: CBTProps) {
+function CustomIconButton({
+  text,
+  icon,
+  size,
+  variant,
+  onClick,
+}: CustomIconButtonProps) {
   return (
     <VStack>
       <IconButton size={size} variant={variant} onClick={onClick}>

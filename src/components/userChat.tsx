@@ -33,7 +33,7 @@ function UserChat() {
       left="50%"
       transform="translate(-50%)"
       bottom="10px"
-      maxW="2xl"
+      maxW="3xl"
       p={1}
       mx={3}
       rounded={5}

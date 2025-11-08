@@ -6,11 +6,11 @@ import ChatTools from "./chatTools";
 import { useState } from "react";
 
 function Chat() {
-  const [ctOpen, setCTOpen] = useState(false);
+  const [chatToolsOpen, setOpen] = useState(false);
   return (
     <Box
       display="grid"
-      gridTemplateColumns={ctOpen ? "1fr 300px" : "1fr 0px"}
+      gridTemplateColumns={chatToolsOpen ? "1fr 300px" : "1fr 0px"}
       h="100%"
       w="100%"
       flex="1"
@@ -25,7 +25,7 @@ function Chat() {
         display="flex"
         flexDirection="column"
       >
-        <ChatHeader onCTToggle={() => setCTOpen(!ctOpen)} />
+        <ChatHeader onChatToolsToggle={() => setOpen(!chatToolsOpen)} />
         <Box flex="1" position="relative">
           <Container
             position="absolute"
@@ -33,8 +33,8 @@ function Chat() {
             transform="translate(-50%)"
             mx={3}
             bottom="20px"
-            maxW="2xl"
-            w="2xl"
+            maxW="3xl"
+            w="3xl"
             h="calc(100% - 20px)"
             bg="teal"
           ></Container>
@@ -43,7 +43,7 @@ function Chat() {
       </Box>
       <ChatTools
         transition="all 0.3s"
-        transform={ctOpen ? "translateX(0)" : "translateX(100%)"}
+        transform={chatToolsOpen ? "translateX(0)" : "translateX(100%)"}
       />
     </Box>
   );
