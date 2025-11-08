@@ -23,5 +23,6 @@ dist-ssr
 *.sln
 *.sw?
 
-# Dev notes
+# Dev
 todo.md
+openapi.json
