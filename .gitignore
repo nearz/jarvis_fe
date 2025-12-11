@@ -27,3 +27,6 @@ dist-ssr
 todo.md
 openapi.json
 temp-test/*
+.env
+.env.local
+.env.*.local
