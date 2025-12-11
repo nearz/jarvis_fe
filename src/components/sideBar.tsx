@@ -1,34 +1,49 @@
 import Logo from "./logo";
-import CustomIconButton from "./customIconButton";
-
-import { Box, VStack } from "@chakra-ui/react";
-import { FaPlus } from "react-icons/fa6";
+import { Box, VStack, Icon, IconButton } from "@chakra-ui/react";
+import { CiChat2, CiFolderOn } from "react-icons/ci";
+import { FaProjectDiagram } from "react-icons/fa";
 
 interface SideBarProps {
-  onTrayOneToggle: () => void;
+  onChatsToggle: () => void;
   onTrayTwoToggle: () => void;
 }
 
-function SideBar({ onTrayOneToggle, onTrayTwoToggle }: SideBarProps) {
+function SideBar({ onChatsToggle, onTrayTwoToggle }: SideBarProps) {
   return (
-    <Box zIndex={2} p={0} m={0} h="100%" minW="70px" w="70px" bg="gray.800">
+    <Box
+      zIndex={2}
+      p={0}
+      m={0}
+      h="100%"
+      minW="70px"
+      w="70px"
+      bg="gray.800"
+      borderRightWidth="2px"
+      borderRightColor="gray.900"
+    >
       <VStack>
         <Logo />
         <VStack>
-          <CustomIconButton
+          <IconButton
+            name="chats"
+            size="md"
+            variant="ghost"
+            onClick={onChatsToggle}
+          >
+            <Icon boxSize={8}>
+              <CiChat2 />
+            </Icon>
+          </IconButton>
+          <IconButton
             name="one"
-            size="xs"
+            size="md"
             variant="ghost"
-            icon={<FaPlus />}
-            onClick={onTrayOneToggle}
-          />
-          <CustomIconButton
-            name="two"
-            size="xs"
-            variant="ghost"
-            icon={<FaPlus />}
             onClick={onTrayTwoToggle}
-          />
+          >
+            <Icon boxSize={8}>
+              <CiFolderOn />
+            </Icon>
+          </IconButton>
         </VStack>
       </VStack>
     </Box>

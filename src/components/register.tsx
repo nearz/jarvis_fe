@@ -1,24 +1,34 @@
-import { Card, Input, Button, VStack, Box } from "@chakra-ui/react";
+import { Card, Input, Button, VStack, Box, Text } from "@chakra-ui/react";
 import { Field } from "@chakra-ui/react";
 import { useState } from "react";
+import { authService } from "../api/services/authService";
 
 interface RegisterProps {
-  onRegister?: (
-    email: string,
-    password: string,
-    confirmPassword: string,
-  ) => void;
+  onRegister: (redirectLogin: boolean) => void;
 }
 
 function Register({ onRegister }: RegisterProps) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [registerError, setRegisterError] = useState(false);
+  const [errorMsg, setErrMsg] = useState("");
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    onRegister?.(email, password, confirmPassword);
-    console.log(email, password, confirmPassword);
+    (async () => {
+      const resp = await authService.register({
+        email: email,
+        password: password,
+        password_confirm: confirmPassword,
+      });
+      if (resp.success) {
+        onRegister(false);
+      } else {
+        setRegisterError(true);
+        setErrMsg("Registration Failed");
+      }
+    })();
   };
 
   return (
@@ -80,7 +90,7 @@ function Register({ onRegister }: RegisterProps) {
                   required
                 />
               </Field.Root>
-
+              {registerError && <Text color="red.500">{errorMsg}</Text>}
               <Button
                 type="submit"
                 w="100%"

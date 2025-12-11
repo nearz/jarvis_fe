@@ -81,6 +81,64 @@ class ApiClient {
     }
   }
 
+  async *streamIterator(
+    endpoint: string,
+    data: unknown,
+    requiresAuth = true,
+  ): AsyncGenerator<any, void, unknown> {
+    const requestHeaders: Record<string, string> = {
+      "Content-Type": "application/json",
+      Accept: "text/event-stream",
+    };
+
+    if (requiresAuth && this.token) {
+      requestHeaders["Authorization"] = `Bearer ${this.token}`;
+    }
+
+    const url = `${this.baseUrl}${endpoint}`;
+
+    const response = await fetch(url, {
+      method: "POST",
+      headers: requestHeaders,
+      body: JSON.stringify(data),
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const reader = response.body?.getReader();
+    const decoder = new TextDecoder();
+
+    if (!reader) {
+      throw new Error("Response body is not readable");
+    }
+
+    let buffer = "";
+    try {
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        buffer += decoder.decode(value, { stream: true });
+        const lines = buffer.split("\n");
+        buffer = lines.pop() || "";
+
+        for (const line of lines) {
+          if (line.startsWith("data: ")) {
+            const data = line.slice(6);
+            try {
+              yield JSON.parse(data);
+            } catch {
+              yield data;
+            }
+          }
+        }
+      }
+    } finally {
+      reader.releaseLock();
+    }
+  }
+
   async get<T>(endpoint: string, requiresAuth = false): Promise<T> {
     return this.request<T>(endpoint, requiresAuth, {
       method: "GET",

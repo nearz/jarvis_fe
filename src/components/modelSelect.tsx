@@ -15,9 +15,21 @@ function ModelSelect({ onModelSelect }: ModelSelectProps) {
         </Text>
         <Box h="1px" w="100%" bg="teal"></Box>
       </HStack>
-      <Model name="GPT 4o" icon={<LuAtom />} onClick={onModelSelect} />
       <Model
-        name="Claude 3.7 Sonnet"
+        modelName="GPT 4o"
+        modelValue="gpt-4o"
+        icon={<LuAtom />}
+        onClick={onModelSelect}
+      />
+      <Model
+        modelName="Claude 3.7 Sonnet"
+        modelValue="claude-sonnet-3-7"
+        icon={<LuAtom />}
+        onClick={onModelSelect}
+      />
+      <Model
+        modelName="Claude 4.5 Sonnet"
+        modelValue="claude-sonnet-4-5"
         icon={<LuAtom />}
         onClick={onModelSelect}
       />

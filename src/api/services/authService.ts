@@ -1,31 +1,44 @@
 import { apiClient } from "../client";
 import type {
   LoginRequest,
+  LoginResult,
   TokenResponse,
   RegisterRequest,
-  RegisterResponse,
+  RegisterResult,
 } from "../types";
 
 export const authService = {
-  async login(credentials: LoginRequest): Promise<TokenResponse> {
-    const resp = await apiClient.post<TokenResponse>(
-      "/login",
-      credentials,
-      false,
-    );
+  async login(credentials: LoginRequest): Promise<LoginResult> {
+    try {
+      const resp = await apiClient.post<TokenResponse>(
+        "/login",
+        credentials,
+        false,
+      );
 
-    apiClient.setToken(resp.token);
+      apiClient.setToken(resp.token);
 
-    return resp;
+      return { success: true, error: "" };
+    } catch (error: any) {
+      if (error.statusCode === 401) {
+        return { success: false, error: "Invalid Credentials" };
+      } else {
+        return { success: false, error: "System Error" };
+      }
+    }
   },
 
-  async register(credentials: RegisterRequest): Promise<RegisterResponse> {
-    const resp = await apiClient.post<RegisterResponse>(
-      "/register",
-      credentials,
-      false,
-    );
+  async register(credentials: RegisterRequest): Promise<RegisterResult> {
+    try {
+      const resp = await apiClient.post<RegisterResult>(
+        "/register",
+        credentials,
+        false,
+      );
 
-    return resp;
+      return resp;
+    } catch (error: any) {
+      return { success: false };
+    }
   },
 };

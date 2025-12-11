@@ -3,12 +3,13 @@ import type { ReactNode } from "react";
 import { CiCircleInfo } from "react-icons/ci";
 
 interface ModelProps {
-  name: string;
+  modelName: string;
+  modelValue: string;
   icon: ReactNode;
   onClick: (name: string) => void;
 }
 
-function Model({ name, icon, onClick }: ModelProps) {
+function Model({ modelName, modelValue, icon, onClick }: ModelProps) {
   return (
     <Button
       w="100%"
@@ -16,11 +17,11 @@ function Model({ name, icon, onClick }: ModelProps) {
       h="30px"
       justifyContent="flex-start"
       variant="ghost"
-      onClick={() => onClick?.(name)}
+      onClick={() => onClick?.(modelValue)}
     >
       <Icon size="md">{icon}</Icon>
       <Text textStyle="sm" fontWeight="medium">
-        {name}
+        {modelName}
       </Text>
       <Icon>
         <CiCircleInfo />

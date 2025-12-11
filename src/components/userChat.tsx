@@ -16,34 +16,83 @@ import {
 } from "react-icons/fa6";
 import { TbBrandMetabrainz } from "react-icons/tb";
 import ModelSelect from "./modelSelect";
-import { useState } from "react";
-// import { Tooltip } from "./ui/tooltip";
+import { useState, useEffect, useRef } from "react";
+import type { ChatRequest } from "../api/types";
 
-function UserChat() {
+interface BorderRadiusProps {
+  borderRadius?: number | string;
+  borderTopRadius?: number | string;
+}
+
+interface UserChatProps {
+  onSubmitChat: (chatRequest: ChatRequest) => void;
+  bottom?: string;
+  position: string;
+  borderRadiusProps?: BorderRadiusProps;
+}
+
+function UserChat({
+  onSubmitChat,
+  bottom,
+  position,
+  borderRadiusProps,
+}: UserChatProps) {
   const [selectedModel, setSelectedModel] = useState("Default");
   const [isOpen, setIsOpen] = useState(false);
+  const [chatMsg, setChatMsg] = useState("");
+  const textAreaRef = useRef<HTMLTextAreaElement>(null);
+
+  useEffect(() => {
+    textAreaRef.current?.focus();
+  }, []);
+
   const handleModelSelect = (name: string) => {
     setSelectedModel(name);
     setIsOpen(false);
   };
 
+  function handleMsgUpdate(e: React.ChangeEvent<HTMLTextAreaElement>) {
+    setChatMsg(e.target.value);
+  }
+
+  function handleChatSubmit() {
+    if (chatMsg.trim()) {
+      onSubmitChat({ message: chatMsg, llm: selectedModel });
+      setChatMsg("");
+      textAreaRef.current?.focus();
+    }
+  }
+
+  function handleChatKeyDown(e: React.KeyboardEvent<HTMLTextAreaElement>) {
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault();
+      if (chatMsg.trim()) {
+        handleChatSubmit();
+      }
+    }
+  }
+
   return (
     <Container
-      position="absolute"
+      position={position}
       left="50%"
       transform="translate(-50%)"
-      bottom="10px"
+      bottom={bottom}
       maxW="3xl"
       p={1}
       mx={3}
-      rounded={5}
+      {...borderRadiusProps}
       bg="gray.800"
     >
       <VStack>
         <Textarea
+          ref={textAreaRef}
           id="user-chat"
           size="md"
           placeholder="Chat..."
+          value={chatMsg}
+          onChange={handleMsgUpdate}
+          onKeyDown={handleChatKeyDown}
           variant="subtle"
           bg="gray.800"
           autoresize
@@ -102,7 +151,7 @@ function UserChat() {
               rounded="md"
               variant="ghost"
               color="gray.500"
-              onClick={() => console.log("Chat Submit")}
+              onClick={() => console.log("File Upload")}
             >
               <FaPaperclip />
             </IconButton>
@@ -114,7 +163,7 @@ function UserChat() {
               bg="teal.700"
               _hover={{ bg: "teal.600" }}
               color="gray.900"
-              onClick={() => console.log("Chat Submit")}
+              onClick={handleChatSubmit}
             >
               <FaArrowUp />
             </IconButton>

@@ -1,0 +1,78 @@
+export const msgs = [
+  {
+    index: 1,
+    content: "What is the tallest mountain in the world?",
+    llm: "claude-sonnet-4-5",
+    message_type: "user",
+    message_id: "0a6c3d7f-8cd9-4107-90f9-e39cf47c6a9b",
+    thread_id: "0b5b0796-d884-4a70-a9f9-5452382acab5",
+    created_at: "2025-11-26T20:46:51.218000Z",
+  },
+  {
+    index: 2,
+    content:
+      "The tallest mountain in the world is **Mount Everest**, which stands at **8,849 meters (29,032 feet)** above sea level. It's located in the Himalayas on the border between Nepal and Tibet (China).\n\nMount Everest is measured from sea level to its summit. If you're curious, there's an interesting distinction: while Everest is the highest mountain above sea level, **Mauna Kea** in Hawaii is actually taller when measured from its base on the ocean floor to its peak (about 10,210 meters or 33,500 feet total), though most of it is underwater.",
+    llm: "claude-sonnet-4-5",
+    message_type: "ai",
+    message_id: "lc_run--8c780ec6-3dad-4643-9922-97218acc5f1b",
+    thread_id: "0b5b0796-d884-4a70-a9f9-5452382acab5",
+    created_at: "2025-11-26T20:46:51.218000Z",
+  },
+  {
+    index: 3,
+    content: "Is there such things as the smallest mountain in the world?",
+    llm: "claude-sonnet-4-5",
+    message_type: "user",
+    message_id: "2e87535e-d764-4cb5-bc2c-ec1e8ee03b48",
+    thread_id: "0b5b0796-d884-4a70-a9f9-5452382acab5",
+    created_at: "2025-11-27T10:34:57.448000Z",
+  },
+  {
+    index: 4,
+    content:
+      'That\'s an interesting question! The concept of the "smallest mountain" is actually quite tricky because there\'s no universally agreed-upon definition of what constitutes a "mountain" versus a "hill."\n\nGenerally, geographers use these informal guidelines:\n- **Hills** are typically under 300 meters (about 1,000 feet) in height\n- **Mountains** are generally taller than 300 meters\n\nHowever, this distinction varies by country and region. Some places use different thresholds (like 600 meters in the UK).\n\nThat said, there are some contenders for "smallest mountain":\n\n1. **Mount Wycheproof** in Australia is often cited as the world\'s smallest registered mountain at only **43 meters (141 feet)** above the surrounding terrain (though it\'s 148 meters above sea level). It\'s officially listed as a mountain on the Australian registry.\n\n2. **Suur Munamägi** in Estonia, at 318 meters, is the highest point in the country and is called a mountain despite being relatively small.\n\nThe challenge is that whether something is called a "mountain" often depends on local geography, cultural naming conventions, and official registries rather than strict scientific criteria. So while Mount Wycheproof is often given the title, it\'s more of a fun fact than a definitive scientific classification!',
+    llm: "claude-sonnet-4-5",
+    message_type: "ai",
+    message_id: "lc_run--0fde6ddb-e37b-4c69-83b6-a755949300d5",
+    thread_id: "0b5b0796-d884-4a70-a9f9-5452382acab5",
+    created_at: "2025-11-27T10:34:57.449000Z",
+  },
+  {
+    index: 5,
+    content: "What are other types of geographical landforms are there?",
+    llm: "claude-sonnet-4-5",
+    message_type: "user",
+    message_id: "2d53bb72-db0b-41c4-81d0-f235856dece3",
+    thread_id: "0b5b0796-d884-4a70-a9f9-5452382acab5",
+    created_at: "2025-11-27T11:30:37.885000Z",
+  },
+  {
+    index: 6,
+    content:
+      "There are many types of geographical landforms! Here's a comprehensive overview organized by category:\n\n## **Elevated Landforms**\n- **Mountains** - Large natural elevations with steep slopes\n- **Hills** - Rounded, elevated landforms lower than mountains\n- **Plateaus** - Flat, elevated areas with steep sides (also called tablelands)\n- **Mesas** - Flat-topped hills with steep sides (smaller than plateaus)\n- **Buttes** - Narrow, isolated hills with steep sides (smaller than mesas)\n\n## **Lowland Landforms**\n- **Valleys** - Low areas between hills or mountains\n- **Canyons/Gorges** - Deep, narrow valleys with steep sides\n- **Basins** - Low-lying areas surrounded by higher ground\n- **Plains** - Broad, flat or gently rolling areas\n- **Prairies/Grasslands** - Flat or rolling grassland plains\n\n## **Coastal Landforms**\n- **Beaches** - Sandy or pebbly shores along water bodies\n- **Cliffs** - Steep rock faces along coastlines\n- **Bays** - Bodies of water partially enclosed by land\n- **Peninsulas** - Land surrounded by water on three sides\n- **Isthmuses** - Narrow strips of land connecting two larger land areas\n- **Capes/Headlands** - Points of land extending into water\n- **Deltas** - Sediment deposits where rivers meet larger water bodies\n- **Estuaries** - Where rivers meet the sea with tidal influence\n\n## **Volcanic Landforms**\n- **Volcanoes** - Mountains formed by volcanic activity\n- **Calderas** - Large volcanic craters\n- **Lava plateaus** - Flat areas formed by lava flows\n\n## **Glacial Landforms**\n- **Moraines** - Debris deposited by glaciers\n- **Fjords** - Deep, narrow inlets carved by glaciers\n- **Cirques** - Bowl-shaped depressions carved by glaciers\n\n## **Desert Landforms**\n- **Dunes** - Hills of sand formed by wind\n- **Oases** - Fertile areas in deserts with water\n\n## **Water-Related Landforms**\n- **Islands** - Land completely surrounded by water\n- **Archipelagos** - Groups of islands\n- **Lakes** - Bodies of water surrounded by land\n- **Rivers** - Natural flowing watercourses\n- **Wetlands/Swamps/Marshes** - Areas where water covers the soil\n\nThese landforms are shaped by various geological processes including erosion, weathering, volcanic activity, tectonic movement, and deposition over millions of years!",
+    llm: "claude-sonnet-4-5",
+    message_type: "ai",
+    message_id: "lc_run--1aa21314-9f45-4721-9dc4-625aacc8e41b",
+    thread_id: "0b5b0796-d884-4a70-a9f9-5452382acab5",
+    created_at: "2025-11-27T11:30:37.886000Z",
+  },
+  {
+    index: 7,
+    content: "What are other types of geographical landforms are there?",
+    llm: "claude-sonnet-4-5",
+    message_type: "user",
+    message_id: "2d53bb72-db0b-41c4-81d0-f235856dece3",
+    thread_id: "0b5b0796-d884-4a70-a9f9-5452382acab5",
+    created_at: "2025-11-27T11:30:37.885000Z",
+  },
+  {
+    index: 8,
+    content:
+      "There are many types of geographical landforms! Here's a comprehensive overview organized by category:\n\n## **Elevated Landforms**\n- **Mountains** - Large natural elevations with steep slopes\n- **Hills** - Rounded, elevated landforms lower than mountains\n- **Plateaus** - Flat, elevated areas with steep sides (also called tablelands)\n- **Mesas** - Flat-topped hills with steep sides (smaller than plateaus)\n- **Buttes** - Narrow, isolated hills with steep sides (smaller than mesas)\n\n## **Lowland Landforms**\n- **Valleys** - Low areas between hills or mountains\n- **Canyons/Gorges** - Deep, narrow valleys with steep sides\n- **Basins** - Low-lying areas surrounded by higher ground\n- **Plains** - Broad, flat or gently rolling areas\n- **Prairies/Grasslands** - Flat or rolling grassland plains\n\n## **Coastal Landforms**\n- **Beaches** - Sandy or pebbly shores along water bodies\n- **Cliffs** - Steep rock faces along coastlines\n- **Bays** - Bodies of water partially enclosed by land\n- **Peninsulas** - Land surrounded by water on three sides\n- **Isthmuses** - Narrow strips of land connecting two larger land areas\n- **Capes/Headlands** - Points of land extending into water\n- **Deltas** - Sediment deposits where rivers meet larger water bodies\n- **Estuaries** - Where rivers meet the sea with tidal influence\n\n## **Volcanic Landforms**\n- **Volcanoes** - Mountains formed by volcanic activity\n- **Calderas** - Large volcanic craters\n- **Lava plateaus** - Flat areas formed by lava flows\n\n## **Glacial Landforms**\n- **Moraines** - Debris deposited by glaciers\n- **Fjords** - Deep, narrow inlets carved by glaciers\n- **Cirques** - Bowl-shaped depressions carved by glaciers\n\n## **Desert Landforms**\n- **Dunes** - Hills of sand formed by wind\n- **Oases** - Fertile areas in deserts with water\n\n## **Water-Related Landforms**\n- **Islands** - Land completely surrounded by water\n- **Archipelagos** - Groups of islands\n- **Lakes** - Bodies of water surrounded by land\n- **Rivers** - Natural flowing watercourses\n- **Wetlands/Swamps/Marshes** - Areas where water covers the soil\n\nThese landforms are shaped by various geological processes including erosion, weathering, volcanic activity, tectonic movement, and deposition over millions of years!",
+    llm: "claude-sonnet-4-5",
+    message_type: "ai",
+    message_id: "lc_run--1aa21314-9f45-4721-9dc4-625aacc8e41b",
+    thread_id: "0b5b0796-d884-4a70-a9f9-5452382acab5",
+    created_at: "2025-11-27T11:30:37.886000Z",
+  },
+];

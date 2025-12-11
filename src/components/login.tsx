@@ -1,19 +1,33 @@
-import { Card, Input, Button, VStack, Box } from "@chakra-ui/react";
+import { Card, Input, Button, VStack, Box, Text } from "@chakra-ui/react";
 import { Field } from "@chakra-ui/react";
 import { useState } from "react";
+import { authService } from "../api/services/authService";
 
 interface LoginProps {
-  onLogin?: (email: string, password: string) => void;
+  onLogin: (login: boolean) => void;
   goToRegister: () => void;
 }
 
 function Login({ onLogin, goToRegister }: LoginProps) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [loginError, setLoginError] = useState(false);
+  const [errorMsg, setErrMsg] = useState("");
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    onLogin?.(email, password);
+    (async () => {
+      const resp = await authService.login({
+        email: email,
+        password: password,
+      });
+      if (resp.success) {
+        onLogin(true);
+      } else {
+        setLoginError(true);
+        setErrMsg(resp.error);
+      }
+    })();
   };
 
   return (
@@ -59,7 +73,7 @@ function Login({ onLogin, goToRegister }: LoginProps) {
                   required
                 />
               </Field.Root>
-
+              {loginError && <Text color="red.500">{errorMsg}</Text>}
               <Button
                 type="submit"
                 w="100%"

@@ -1,51 +1,81 @@
 import SideBar from "./sideBar";
 import Tray from "./tray";
-import { useState } from "react";
+import Thread from "./thread";
+import { Text } from "@chakra-ui/react";
+import { useState, useEffect } from "react";
+import type { ThreadMetaData } from "../api/types";
+import { historyService } from "../api/services/historyService";
 
-function MainNav() {
+interface MainNavProps {
+  onSelectThread: (threadID: string) => void;
+}
+
+function MainNav({ onSelectThread }: MainNavProps) {
   const [activeTray, setActiveTray] = useState<string | null>(null);
-  const handleTrayToggle = (trayName: string) => {
+  const [callHistory, setCallHistory] = useState(false);
+  function handleTrayToggle(trayName: string) {
     setActiveTray(activeTray === trayName ? null : trayName);
-  };
+    if (trayName === "chats" && activeTray !== "chats") {
+      setCallHistory(!callHistory);
+    }
+  }
+
+  const [threads, setThreads] = useState<ThreadMetaData[]>([]);
+  useEffect(() => {
+    (async () => {
+      console.log("chat history use effect executed.");
+      const threadHistory = await historyService.history();
+      if (threadHistory.success) {
+        setThreads(threadHistory.threads);
+      } else {
+        console.log("History fetch failed");
+      }
+    })();
+  }, [callHistory]);
 
   return (
     <>
       <SideBar
-        onTrayOneToggle={() => handleTrayToggle("one")}
+        onChatsToggle={() => handleTrayToggle("chats")}
         onTrayTwoToggle={() => handleTrayToggle("two")}
       />
       <Tray
-        name="one"
-        bg="purple.400"
+        name="chats"
+        bg="gray.800"
         position="absolute"
         left="70px"
         top="0"
         bottom="0"
-        w="200px"
+        w="300px"
         h="100%"
+        overflowY="auto"
         m={0}
         p={0}
         zIndex={1}
         transition="all 0.3s"
-        transform={activeTray === "one" ? "translateX(0)" : "translateX(-100%)"}
-        visibility={activeTray === "one" ? "visible" : "hidden"}
-      />
-      <Tray
-        name="two"
-        bg="pink.400"
-        position="absolute"
-        left="70px"
-        top="0"
-        bottom="0"
-        w="200px"
-        h="100%"
-        m={0}
-        p={0}
-        zIndex={1}
-        transition="all 0.3s"
-        transform={activeTray === "two" ? "translateX(0)" : "translateX(-100%)"}
-        visibility={activeTray === "two" ? "visible" : "hidden"}
-      />
+        transform={
+          activeTray === "chats" ? "translateX(0)" : "translateX(-100%)"
+        }
+        visibility={activeTray === "chats" ? "visible" : "hidden"}
+        // onMouseLeave={() =>
+        //   activeTray === "chats" ? handleTrayToggle("chats") : null
+        // }
+      >
+        <Text m={2} color="teal.500" fontWeight="semibold">
+          Chats:
+        </Text>
+        {threads.map((thread) => (
+          <Thread
+            key={thread.thread_id}
+            threadID={thread.thread_id}
+            trayName="one"
+            title={thread.title}
+            llm={thread.last_llm_used}
+            onSelectThread={onSelectThread}
+            onTrayToggle={handleTrayToggle}
+          />
+        ))}
+      </Tray>
     </>
   );
 }
