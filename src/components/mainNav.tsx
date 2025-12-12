@@ -13,6 +13,7 @@ interface MainNavProps {
 function MainNav({ onSelectThread }: MainNavProps) {
   const [activeTray, setActiveTray] = useState<string | null>(null);
   const [callHistory, setCallHistory] = useState(false);
+
   function handleTrayToggle(trayName: string) {
     setActiveTray(activeTray === trayName ? null : trayName);
     if (trayName === "chats" && activeTray !== "chats") {
@@ -21,6 +22,14 @@ function MainNav({ onSelectThread }: MainNavProps) {
   }
 
   const [threads, setThreads] = useState<ThreadMetaData[]>([]);
+
+  function handleThreadDelete(threadID: string) {
+    console.log(`Nav Delete Thread: ${threadID}`);
+    setThreads((prevThreads) =>
+      prevThreads.filter((thread) => thread.thread_id !== threadID),
+    );
+  }
+
   useEffect(() => {
     (async () => {
       console.log("chat history use effect executed.");
@@ -57,9 +66,9 @@ function MainNav({ onSelectThread }: MainNavProps) {
           activeTray === "chats" ? "translateX(0)" : "translateX(-100%)"
         }
         visibility={activeTray === "chats" ? "visible" : "hidden"}
-        // onMouseLeave={() =>
-        //   activeTray === "chats" ? handleTrayToggle("chats") : null
-        // }
+        onMouseLeave={() =>
+          activeTray === "chats" ? handleTrayToggle("chats") : null
+        }
       >
         <Text m={2} color="teal.500" fontWeight="semibold">
           Chats:
@@ -72,7 +81,9 @@ function MainNav({ onSelectThread }: MainNavProps) {
             title={thread.title}
             llm={thread.last_llm_used}
             onSelectThread={onSelectThread}
+            onDeleteThread={handleThreadDelete}
             onTrayToggle={handleTrayToggle}
+            isTrayOpen={activeTray === "chats"}
           />
         ))}
       </Tray>

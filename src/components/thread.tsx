@@ -5,20 +5,22 @@ import {
   Center,
   Popover,
   Portal,
-  Button,
-  Icon,
 } from "@chakra-ui/react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { BsThreeDotsVertical } from "react-icons/bs";
 import { FaRegTrashCan } from "react-icons/fa6";
+import { LuPencil } from "react-icons/lu";
 import ThreadOptions from "./threadOptions";
+import { historyService } from "../api/services/historyService";
 
 interface ThreadProps {
   title: string;
   llm: string;
   threadID: string;
   trayName: string;
+  isTrayOpen: boolean;
   onSelectThread: (threadID: string) => void;
+  onDeleteThread: (threadID: string) => void;
   onTrayToggle: (trayName: string) => void;
 }
 
@@ -27,7 +29,9 @@ function Thread({
   trayName,
   title,
   llm,
+  isTrayOpen,
   onSelectThread,
+  onDeleteThread,
   onTrayToggle,
 }: ThreadProps) {
   const [optionsIsOpen, setOptsIsOpen] = useState(false);
@@ -38,8 +42,26 @@ function Thread({
   }
 
   function handleThreadDelete() {
-    console.log(threadID);
+    console.log(`Delete: ${threadID}`);
+    (async () => {
+      const deleteThread = await historyService.deleteThread(threadID);
+      if (deleteThread.success) {
+        onDeleteThread(threadID);
+      } else {
+        console.log("Delete thread failed");
+      }
+    })();
   }
+
+  function handleThreadRename() {
+    console.log(`Rename: ${threadID}`);
+  }
+
+  useEffect(() => {
+    if (!isTrayOpen) {
+      setOptsIsOpen(false);
+    }
+  }, [isTrayOpen]);
 
   return (
     <HStack my={1.5} mx={2} gap="2.5px">
@@ -92,9 +114,17 @@ function Thread({
               <Popover.Arrow />
               <Popover.Body p={2}>
                 <ThreadOptions
+                  text="Rename"
+                  textIconColor="white"
+                  hoverColor="gray.800"
+                  onClick={handleThreadRename}
+                >
+                  <LuPencil />
+                </ThreadOptions>
+                <ThreadOptions
                   text="Delete"
                   textIconColor="red.400"
-                  hoverColor="red.subtle"
+                  hoverColor="gray.800"
                   onClick={handleThreadDelete}
                 >
                   <FaRegTrashCan />

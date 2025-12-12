@@ -20,6 +20,8 @@ function ThreadOptions({
     <Button
       variant="plain"
       h="30px"
+      w="100%"
+      justifyContent="flex-start"
       px={2}
       _hover={{ bg: hoverColor }}
       onClick={onClick}

@@ -1,5 +1,9 @@
 import { apiClient } from "../client";
-import type { HistoryResult, ThreadHistoryResult } from "../types";
+import type {
+  HistoryResult,
+  ThreadHistoryResult,
+  DeleteThreadResult,
+} from "../types";
 
 export const historyService = {
   async history(): Promise<HistoryResult> {
@@ -27,6 +31,22 @@ export const historyService = {
       }
     } catch (error: any) {
       return { success: false, messages: [] };
+    }
+  },
+  async deleteThread(threadID: string): Promise<DeleteThreadResult> {
+    try {
+      const resp = await apiClient.delete<DeleteThreadResult>(
+        `/history/${threadID}`,
+        true,
+      );
+      console.log(`Delete Thread: ${resp}`);
+      if (resp.success) {
+        return resp;
+      } else {
+        return { success: false, thread_id: "" };
+      }
+    } catch (error: any) {
+      return { success: false, thread_id: "" };
     }
   },
 };

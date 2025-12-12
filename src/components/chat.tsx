@@ -62,6 +62,7 @@ function Chat({ selectedThreadID, onNewChat }: ChatProps) {
 
   useEffect(() => {
     if (selectedThreadID !== null) {
+      console.log(selectedThreadID);
       (async () => {
         const resp = await historyService.threadHistory(selectedThreadID);
         if (resp.success && resp.messages.length > 0) {
@@ -139,6 +140,7 @@ function Chat({ selectedThreadID, onNewChat }: ChatProps) {
       overflow="hidden"
     >
       <Box
+        id="chat-container"
         bg="gray.900"
         position="relative"
         h="100%"
@@ -149,8 +151,9 @@ function Chat({ selectedThreadID, onNewChat }: ChatProps) {
         <ChatHeader
           position="absolute"
           top="0"
-          left="0"
           right="0"
+          w="40px"
+          mr="20px"
           zIndex="10"
           onNewChat={handleNewChat}
           onChatToolsToggle={() => setChatToolsOpen(!chatToolsOpen)}
@@ -180,6 +183,7 @@ function Chat({ selectedThreadID, onNewChat }: ChatProps) {
               top="0px"
               position="relative"
               overflowY="auto"
+              overflowX="hidden"
             >
               <Container
                 position="absolute"

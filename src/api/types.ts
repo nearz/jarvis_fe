@@ -47,6 +47,11 @@ export interface ThreadHistoryResult {
   messages: Message[];
 }
 
+export interface DeleteThreadResult {
+  success: boolean;
+  thread_id: string;
+}
+
 export interface Message {
   index: number;
   content: string;
