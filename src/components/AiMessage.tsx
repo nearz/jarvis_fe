@@ -1,4 +1,4 @@
-import { Box, Separator, Text, Code } from "@chakra-ui/react";
+import { Box, Separator, Text, Code, Table } from "@chakra-ui/react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import rehypeHighlight from "rehype-highlight";
@@ -9,6 +9,12 @@ const HeadingHandler = ({ children }: { children?: React.ReactNode }) => (
     {children}
   </Text>
 );
+
+// const HeadingOneHandler = ({ children }: { children?: React.ReactNode }) => (
+//   <Text fontSize="2xl" fontWeight="bold" my={2}>
+//     {children}
+//   </Text>
+// );
 
 function AiMessage({ content }: { content: string }) {
   return (
@@ -52,6 +58,20 @@ function AiMessage({ content }: { content: string }) {
               {children}
             </Box>
           ),
+          table: ({ children }) => (
+            <Box overflowX="auto" my={8}>
+              <Table.Root size="sm" variant="outline">
+                {children}
+              </Table.Root>
+            </Box>
+          ),
+          thead: ({ children }) => <Table.Header>{children}</Table.Header>,
+          tbody: ({ children }) => <Table.Body>{children}</Table.Body>,
+          tr: ({ children }) => <Table.Row>{children}</Table.Row>,
+          th: ({ children }) => (
+            <Table.ColumnHeader>{children}</Table.ColumnHeader>
+          ),
+          td: ({ children }) => <Table.Cell>{children}</Table.Cell>,
         }}
       >
         {content}

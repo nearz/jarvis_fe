@@ -9,7 +9,7 @@ export const historyService = {
   async history(): Promise<HistoryResult> {
     try {
       const resp = await apiClient.get<HistoryResult>("/history", true);
-      if (resp.success && resp.threads.length > 0) {
+      if (resp.success) {
         return resp;
       } else {
         return { success: false, threads: [] };
