@@ -1,7 +1,7 @@
 import { Text, Button, Icon } from "@chakra-ui/react";
 import React from "react";
 
-interface ThreadOptProps {
+interface OptionProps {
   text: string;
   textIconColor: string;
   children: React.ReactNode;
@@ -9,13 +9,13 @@ interface ThreadOptProps {
   onClick: () => void;
 }
 
-function ThreadOptions({
+function Option({
   text,
   children,
   textIconColor,
   hoverColor,
   onClick,
-}: ThreadOptProps) {
+}: OptionProps) {
   return (
     <Button
       variant="plain"
@@ -36,4 +36,4 @@ function ThreadOptions({
   );
 }
 
-export default ThreadOptions;
+export default Option;

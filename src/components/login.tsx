@@ -50,7 +50,6 @@ function Login({ onLogin, goToRegister }: LoginProps) {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   bg="gray.900"
-                  borderColor="gray.700"
                   _focus={{
                     borderColor: "teal.500",
                   }}
@@ -66,7 +65,6 @@ function Login({ onLogin, goToRegister }: LoginProps) {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   bg="gray.900"
-                  borderColor="gray.700"
                   _focus={{
                     borderColor: "teal.500",
                   }}

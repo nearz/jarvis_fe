@@ -62,6 +62,27 @@ export interface Message {
   created_at?: string;
 }
 
+export interface ProjectMetaData {
+  project_id: string;
+  title: string;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface ProjectsResult {
+  success: boolean;
+  projects: ProjectMetaData[];
+}
+
+export interface NewProjectResult {
+  success: boolean;
+  project_id: string;
+}
+
+export interface NewProjectRequest {
+  title: string;
+}
+
 export interface ApiError {
   message: string;
   statusCode: number;

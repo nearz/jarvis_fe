@@ -8,53 +8,25 @@ import {
 } from "@chakra-ui/react";
 import { useState, useEffect } from "react";
 import { BsThreeDotsVertical } from "react-icons/bs";
-import { FaRegTrashCan } from "react-icons/fa6";
-import { LuPencil } from "react-icons/lu";
+import { FaRegTrashCan, FaPlus } from "react-icons/fa6";
 import Option from "./option";
-import { historyService } from "../api/services/historyService";
 
-interface ThreadProps {
-  title: string;
-  llm: string;
-  threadID: string;
+interface ProjectProps {
+  projectID: string;
   trayName: string;
+  title: string;
   isTrayOpen: boolean;
-  onSelectThread: (threadID: string) => void;
-  onDeleteThread: (threadID: string) => void;
-  onTrayToggle: (trayName: string) => void;
 }
 
-function Thread({
-  threadID,
-  trayName,
-  title,
-  llm,
-  isTrayOpen,
-  onSelectThread,
-  onDeleteThread,
-  onTrayToggle,
-}: ThreadProps) {
+function Project({ title, isTrayOpen }: ProjectProps) {
   const [optionsIsOpen, setOptsIsOpen] = useState(false);
 
-  function handleThreadSelect() {
-    onSelectThread(threadID);
-    onTrayToggle(trayName);
+  function handleProjectSelect() {
+    console.log(title);
   }
 
-  function handleThreadDelete() {
-    console.log(`Delete: ${threadID}`);
-    (async () => {
-      const deleteThread = await historyService.deleteThread(threadID);
-      if (deleteThread.success) {
-        onDeleteThread(threadID);
-      } else {
-        console.log("Delete thread failed");
-      }
-    })();
-  }
-
-  function handleThreadRename() {
-    console.log(`Rename: ${threadID}`);
+  function handleProjectDelete() {
+    console.log("Project Delete");
   }
 
   useEffect(() => {
@@ -73,7 +45,7 @@ function Thread({
         bg="gray.700"
         borderLeftRadius={5}
         p={1}
-        onClick={handleThreadSelect}
+        onClick={handleProjectSelect}
         _hover={{ bg: "teal.700", cursor: "pointer" }}
       >
         <Text
@@ -85,7 +57,6 @@ function Thread({
         >
           {title}
         </Text>
-        <Text textStyle="sm">{llm}</Text>
       </VStack>
       <Popover.Root
         open={optionsIsOpen}
@@ -114,18 +85,18 @@ function Thread({
               <Popover.Arrow />
               <Popover.Body p={2}>
                 <Option
-                  text="Rename"
+                  text="New Chat"
                   textIconColor="white"
                   hoverColor="gray.800"
-                  onClick={handleThreadRename}
+                  onClick={handleProjectDelete}
                 >
-                  <LuPencil />
+                  <FaPlus />
                 </Option>
                 <Option
                   text="Delete"
                   textIconColor="red.400"
                   hoverColor="gray.800"
-                  onClick={handleThreadDelete}
+                  onClick={handleProjectDelete}
                 >
                   <FaRegTrashCan />
                 </Option>
@@ -139,4 +110,4 @@ function Thread({
   );
 }
 
-export default Thread;
+export default Project;

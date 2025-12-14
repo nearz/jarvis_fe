@@ -1,10 +1,13 @@
 import SideBar from "./sideBar";
 import Tray from "./tray";
 import Thread from "./thread";
+import NewProject from "./newProject";
+import Project from "./project";
 import { Text } from "@chakra-ui/react";
+import type { ThreadMetaData, ProjectMetaData } from "../api/types";
 import { useState, useEffect } from "react";
-import type { ThreadMetaData } from "../api/types";
 import { historyService } from "../api/services/historyService";
+import { projectService } from "../api/services/projectService";
 
 interface MainNavProps {
   onSelectThread: (threadID: string) => void;
@@ -12,16 +15,22 @@ interface MainNavProps {
 
 function MainNav({ onSelectThread }: MainNavProps) {
   const [activeTray, setActiveTray] = useState<string | null>(null);
+
+  const [threads, setThreads] = useState<ThreadMetaData[]>([]);
   const [callHistory, setCallHistory] = useState(false);
+
+  const [projects, setProjects] = useState<ProjectMetaData[]>([]);
+  const [callProjects, setCallProjects] = useState(false);
 
   function handleTrayToggle(trayName: string) {
     setActiveTray(activeTray === trayName ? null : trayName);
     if (trayName === "chats" && activeTray !== "chats") {
       setCallHistory(!callHistory);
     }
+    if (trayName === "projects" && activeTray !== "projects") {
+      setCallProjects(!callProjects);
+    }
   }
-
-  const [threads, setThreads] = useState<ThreadMetaData[]>([]);
 
   function handleThreadDelete(threadID: string) {
     console.log(`Nav Delete Thread: ${threadID}`);
@@ -42,11 +51,23 @@ function MainNav({ onSelectThread }: MainNavProps) {
     })();
   }, [callHistory]);
 
+  useEffect(() => {
+    (async () => {
+      console.log("projects use effect executed.");
+      const projectList = await projectService.projects();
+      if (projectList.success) {
+        setProjects(projectList.projects);
+      } else {
+        console.log("Projects fetch failed");
+      }
+    })();
+  }, [callProjects]);
+
   return (
     <>
       <SideBar
         onChatsToggle={() => handleTrayToggle("chats")}
-        onTrayTwoToggle={() => handleTrayToggle("two")}
+        onTrayTwoToggle={() => handleTrayToggle("projects")}
       />
       <Tray
         name="chats"
@@ -77,7 +98,7 @@ function MainNav({ onSelectThread }: MainNavProps) {
           <Thread
             key={thread.thread_id}
             threadID={thread.thread_id}
-            trayName="one"
+            trayName="chats"
             title={thread.title}
             llm={thread.last_llm_used}
             onSelectThread={onSelectThread}
@@ -85,6 +106,39 @@ function MainNav({ onSelectThread }: MainNavProps) {
             onTrayToggle={handleTrayToggle}
             isTrayOpen={activeTray === "chats"}
           />
+        ))}
+      </Tray>
+      <Tray
+        name="projects"
+        bg="gray.800"
+        position="absolute"
+        left="70px"
+        top="0"
+        bottom="0"
+        w="300px"
+        h="100%"
+        overflowY="auto"
+        m={0}
+        p={0}
+        zIndex={1}
+        transition="all 0.3s"
+        transform={
+          activeTray === "projects" ? "translateX(0)" : "translateX(-100%)"
+        }
+        visibility={activeTray === "projects" ? "visible" : "hidden"}
+        onMouseLeave={() =>
+          activeTray === "projects" ? handleTrayToggle("projects") : null
+        }
+      >
+        <NewProject />
+        {projects.map((project) => (
+          <Project
+            key={project.project_id}
+            projectID={project.project_id}
+            trayName="projects"
+            title={project.title}
+            isTrayOpen={activeTray === "projects"}
+          ></Project>
         ))}
       </Tray>
     </>

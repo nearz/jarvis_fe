@@ -10,12 +10,6 @@ const HeadingHandler = ({ children }: { children?: React.ReactNode }) => (
   </Text>
 );
 
-// const HeadingOneHandler = ({ children }: { children?: React.ReactNode }) => (
-//   <Text fontSize="2xl" fontWeight="bold" my={2}>
-//     {children}
-//   </Text>
-// );
-
 function AiMessage({ content }: { content: string }) {
   return (
     <Box px={3} marginBottom={5}>

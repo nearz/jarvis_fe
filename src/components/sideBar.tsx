@@ -1,7 +1,6 @@
 import Logo from "./logo";
 import { Box, VStack, Icon, IconButton } from "@chakra-ui/react";
 import { CiChat2, CiFolderOn } from "react-icons/ci";
-import { FaProjectDiagram } from "react-icons/fa";
 
 interface SideBarProps {
   onChatsToggle: () => void;
