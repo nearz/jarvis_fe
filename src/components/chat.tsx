@@ -5,25 +5,34 @@ import ChatHeader from "./chatHeader";
 import ChatTools from "./chatTools";
 import UserMessage from "./userMessage";
 import AiMessage from "./AiMessage";
+import ProjectView from "./projectView";
 import { useState, useEffect, useRef, useCallback } from "react";
 import type { ChatRequest, Message } from "../api/types";
 import { chatService } from "../api/services/chatService";
 import { historyService } from "../api/services/historyService";
+import { projectService } from "../api/services/projectService";
 
 interface ChatProps {
-  selectedThreadID: string | null;
-  onNewChat: (emptyThreadID: string) => void;
+  selectedProjectID: string;
+  selectedThreadID: string;
+  onSyncIDs: (threadID: string, projectID: string) => void;
 }
 
-function Chat({ selectedThreadID, onNewChat }: ChatProps) {
+function Chat({ selectedProjectID, selectedThreadID, onSyncIDs }: ChatProps) {
   const [chatToolsOpen, setChatToolsOpen] = useState(false);
   const [msgList, setMsgList] = useState<Message[]>([]);
   const [streamingMsg, setStreamingMsg] = useState<string>("");
   const [isStreaming, setIsStreaming] = useState<boolean>(false);
-  const [threadID, setThreadID] = useState<string | null>(null);
+  const [threadID, setThreadID] = useState<string>("");
+  const [selectedModel, setSelectedModel] = useState("Select Model");
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const shouldAutoScrollRef = useRef<boolean>(true);
   const SCROLL_THRESHOLD = 150;
+  const isActiveChat = threadID !== "" || msgList.length > 0;
+
+  function handleSelectedModel(name: string) {
+    setSelectedModel(name);
+  }
 
   const isNearBottom = useCallback(() => {
     const container = scrollContainerRef.current;
@@ -54,34 +63,51 @@ function Chat({ selectedThreadID, onNewChat }: ChatProps) {
   }, [msgList, scrollToBottom]);
 
   // Auto-scroll during streaming
+  // TODO: Not always working, stops while streaming
   useEffect(() => {
     if (isStreaming && shouldAutoScrollRef.current) {
       scrollToBottom("smooth");
     }
   }, [streamingMsg, isStreaming, scrollToBottom]);
 
+  function handleNewChat() {
+    setMsgList([]);
+    setThreadID("");
+    setSelectedModel("Select Model");
+    onSyncIDs("", "");
+  }
+
   useEffect(() => {
-    if (selectedThreadID !== null) {
-      console.log(selectedThreadID);
-      (async () => {
+    setThreadID(selectedThreadID);
+    if (!selectedThreadID) {
+      setMsgList([]);
+    }
+  }, [selectedThreadID]);
+
+  useEffect(() => {
+    if (!selectedThreadID) return;
+    if (selectedThreadID === threadID) return;
+    let cancelled = false;
+    (async () => {
+      try {
         const resp = await historyService.threadHistory(selectedThreadID);
+        if (cancelled) return;
         if (resp.success && resp.messages.length > 0) {
           setMsgList(resp.messages);
           setThreadID(selectedThreadID);
           shouldAutoScrollRef.current = true;
           setTimeout(() => scrollToBottom("instant"), 0);
-        } else {
-          console.log("Error loading thread");
         }
-      })();
-    }
+      } catch (err) {
+        if (!cancelled) {
+          console.log("Error loading thread", err);
+        }
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
   }, [selectedThreadID, scrollToBottom]);
-
-  function handleNewChat() {
-    setMsgList([]);
-    setThreadID(null);
-    onNewChat("");
-  }
 
   function handleSubmitChat(chatRequest: ChatRequest) {
     //Need to move new message to after api call so that it does not add it until call success.
@@ -95,38 +121,58 @@ function Chat({ selectedThreadID, onNewChat }: ChatProps) {
         message_type: "user",
       },
     ]);
+    void submitChat(chatRequest);
+  }
 
-    (async () => {
-      let accumulate = "";
-      setIsStreaming(true);
-      let stream = null;
-      if (threadID === null) {
-        stream = chatService.newChat(chatRequest);
-      } else {
-        stream = chatService.chat(chatRequest, threadID);
+  async function submitChat(chatRequest: ChatRequest) {
+    let stream = null;
+    if (selectedProjectID !== "") {
+      threadID !== ""
+        ? (stream = projectService.projectsChat(
+            chatRequest,
+            selectedProjectID,
+            threadID,
+          ))
+        : (stream = projectService.projectsNewChat(
+            chatRequest,
+            selectedProjectID,
+          ));
+    } else {
+      threadID !== ""
+        ? (stream = chatService.chat(chatRequest, threadID))
+        : (stream = chatService.newChat(chatRequest));
+    }
+    const fullContent = await streamer(stream);
+    setMsgList((prev) => [
+      ...prev,
+      {
+        index: prev.length,
+        content: fullContent,
+        llm: chatRequest.llm,
+        message_type: "ai",
+      },
+    ]);
+    setStreamingMsg("");
+  }
+
+  async function streamer(
+    stream: AsyncGenerator<any, unknown, void>,
+  ): Promise<string> {
+    let accumulate = "";
+    setIsStreaming(true);
+    for await (const chunk of stream) {
+      if (chunk.type === "content") {
+        accumulate += chunk.text;
+        setStreamingMsg(accumulate);
+        console.log(chunk);
+      } else if (chunk.type === "done") {
+        setThreadID(chunk.thread_id);
+        onSyncIDs(chunk.thread_id, selectedProjectID);
+        console.log(chunk);
       }
-      for await (const chunk of stream) {
-        if (chunk.type === "content") {
-          accumulate += chunk.text;
-          setStreamingMsg(accumulate);
-          console.log(chunk);
-        } else if (chunk.type === "done") {
-          setThreadID(chunk.thread_id);
-          console.log(chunk);
-        }
-      }
-      setIsStreaming(false);
-      setMsgList((prev) => [
-        ...prev,
-        {
-          index: prev.length,
-          content: accumulate,
-          llm: chatRequest.llm,
-          message_type: "ai",
-        },
-      ]);
-      setStreamingMsg("");
-    })();
+    }
+    setIsStreaming(false);
+    return accumulate;
   }
 
   return (
@@ -155,25 +201,46 @@ function Chat({ selectedThreadID, onNewChat }: ChatProps) {
           w="40px"
           mr="20px"
           zIndex="10"
+          isActiveChat={isActiveChat}
           onNewChat={handleNewChat}
           onChatToolsToggle={() => setChatToolsOpen(!chatToolsOpen)}
         />
-        {msgList.length === 0 && threadID === null ? (
+        {threadID === "" && selectedProjectID === "" && msgList.length <= 0 ? (
           <VStack
             position="absolute"
             left="50%"
             bottom="45%"
             transform="translate(-50%)"
-            maxW="3xl"
+            maxW="xl"
             w="100%"
           >
             <Text fontSize="3xl">How can I assist you today?</Text>
             <UserChat
-              position="relative"
+              selectedModel={selectedModel}
+              onModelSelect={handleSelectedModel}
               onSubmitChat={handleSubmitChat}
               borderRadiusProps={{ borderRadius: 5 }}
             />
           </VStack>
+        ) : selectedProjectID !== "" &&
+          threadID === "" &&
+          msgList.length <= 0 ? (
+          <Box
+            position="absolute"
+            left="50%"
+            top="18%"
+            transform="translate(-50%)"
+            maxW="2xl"
+            w="100%"
+          >
+            <ProjectView
+              onModelSelect={handleSelectedModel}
+              selectedModel={selectedModel}
+              onThreadSelect={onSyncIDs}
+              onSubmitChat={handleSubmitChat}
+              selectedProjectID={selectedProjectID}
+            />
+          </Box>
         ) : (
           <>
             <Box
@@ -184,6 +251,10 @@ function Chat({ selectedThreadID, onNewChat }: ChatProps) {
               position="relative"
               overflowY="auto"
               overflowX="hidden"
+              css={{
+                scrollbarColor:
+                  "var(--chakra-colors-gray-600) var(--chakra-colors-gray-900)",
+              }}
             >
               <Container
                 position="absolute"
@@ -215,12 +286,21 @@ function Chat({ selectedThreadID, onNewChat }: ChatProps) {
                 </List.Root>
               </Container>
             </Box>
-            <UserChat
+            <Box
+              maxW="3xl"
+              w="full"
               position="absolute"
-              bottom="0px"
-              onSubmitChat={handleSubmitChat}
-              borderRadiusProps={{ borderTopRadius: 5 }}
-            />
+              bottom={0}
+              left="50%"
+              transform="translate(-50%)"
+            >
+              <UserChat
+                selectedModel={selectedModel}
+                onModelSelect={handleSelectedModel}
+                onSubmitChat={handleSubmitChat}
+                borderRadiusProps={{ borderTopRadius: 5 }}
+              />
+            </Box>
           </>
         )}
       </Box>

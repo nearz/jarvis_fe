@@ -10,7 +10,7 @@ interface SideBarProps {
 function SideBar({ onChatsToggle, onTrayTwoToggle }: SideBarProps) {
   return (
     <Box
-      zIndex={2}
+      zIndex={10}
       p={0}
       m={0}
       h="100%"

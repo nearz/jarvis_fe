@@ -1,5 +1,6 @@
 import Model from "./model";
-import { Box, HStack, Text } from "@chakra-ui/react";
+import { useModels } from "../contexts/modelContext";
+import { Box, HStack, Text, Button } from "@chakra-ui/react";
 import { LuAtom } from "react-icons/lu";
 
 interface ModelSelectProps {
@@ -7,32 +8,40 @@ interface ModelSelectProps {
 }
 
 function ModelSelect({ onModelSelect }: ModelSelectProps) {
+  const { models, loading, error, refetch } = useModels();
+
+  // TODO: handle better with spinner
+  if (loading) {
+    return <Text>Loading</Text>;
+  }
+
+  // TODO: Handle better
+  if (error || !models?.success) {
+    return (
+      <Box>
+        <Text>Failed to load models</Text>;
+        <Button onClick={refetch}>Retry</Button>
+      </Box>
+    );
+  }
+
   return (
     <Box>
       <HStack my="5px">
         <Text textStyle="xs" color="teal">
-          GENERAL
+          MODELS
         </Text>
         <Box h="1px" w="100%" bg="teal"></Box>
       </HStack>
-      <Model
-        modelName="GPT 4o"
-        modelValue="gpt-4o"
-        icon={<LuAtom />}
-        onClick={onModelSelect}
-      />
-      <Model
-        modelName="Claude 3.7 Sonnet"
-        modelValue="claude-sonnet-3-7"
-        icon={<LuAtom />}
-        onClick={onModelSelect}
-      />
-      <Model
-        modelName="Claude 4.5 Sonnet"
-        modelValue="claude-sonnet-4-5"
-        icon={<LuAtom />}
-        onClick={onModelSelect}
-      />
+      {models.supported_models.map((model) => (
+        <Model
+          key={model.model}
+          modelName={model.display_name}
+          modelValue={model.model}
+          icon={<LuAtom />}
+          onClick={onModelSelect}
+        />
+      ))}
     </Box>
   );
 }

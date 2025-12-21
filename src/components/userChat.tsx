@@ -25,19 +25,21 @@ interface BorderRadiusProps {
 }
 
 interface UserChatProps {
+  onModelSelect: (name: string) => void;
   onSubmitChat: (chatRequest: ChatRequest) => void;
-  bottom?: string;
-  position: string;
+  placeholder?: string;
+  selectedModel: string;
   borderRadiusProps?: BorderRadiusProps;
 }
 
 function UserChat({
+  onModelSelect,
   onSubmitChat,
-  bottom,
-  position,
   borderRadiusProps,
+  placeholder,
+  selectedModel,
 }: UserChatProps) {
-  const [selectedModel, setSelectedModel] = useState("Default");
+  // const [selectedModel, setSelectedModel] = useState("Default");
   const [isOpen, setIsOpen] = useState(false);
   const [chatMsg, setChatMsg] = useState("");
   const textAreaRef = useRef<HTMLTextAreaElement>(null);
@@ -47,7 +49,8 @@ function UserChat({
   }, []);
 
   const handleModelSelect = (name: string) => {
-    setSelectedModel(name);
+    onModelSelect(name);
+    // setSelectedModel(name);
     setIsOpen(false);
   };
 
@@ -56,7 +59,7 @@ function UserChat({
   }
 
   function handleChatSubmit() {
-    if (chatMsg.trim()) {
+    if (chatMsg.trim() && selectedModel.trim() !== "Select Model") {
       onSubmitChat({ message: chatMsg, llm: selectedModel });
       setChatMsg("");
       textAreaRef.current?.focus();
@@ -66,30 +69,20 @@ function UserChat({
   function handleChatKeyDown(e: React.KeyboardEvent<HTMLTextAreaElement>) {
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
-      if (chatMsg.trim()) {
+      if (chatMsg.trim() && selectedModel.trim() !== "Select Model") {
         handleChatSubmit();
       }
     }
   }
 
   return (
-    <Container
-      position={position}
-      left="50%"
-      transform="translate(-50%)"
-      bottom={bottom}
-      maxW="3xl"
-      p={1}
-      mx={3}
-      {...borderRadiusProps}
-      bg="gray.800"
-    >
+    <Container p={1} {...borderRadiusProps} bg="gray.800">
       <VStack>
         <Textarea
           ref={textAreaRef}
           id="user-chat"
           size="md"
-          placeholder="Chat..."
+          placeholder={placeholder !== undefined ? placeholder : "Chat..."}
           value={chatMsg}
           onChange={handleMsgUpdate}
           onKeyDown={handleChatKeyDown}

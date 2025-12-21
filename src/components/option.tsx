@@ -6,7 +6,7 @@ interface OptionProps {
   textIconColor: string;
   children: React.ReactNode;
   hoverColor: string;
-  onClick: () => void;
+  onClick: (e: React.MouseEvent) => void;
 }
 
 function Option({

@@ -10,23 +10,44 @@ import { useState, useEffect } from "react";
 import { BsThreeDotsVertical } from "react-icons/bs";
 import { FaRegTrashCan, FaPlus } from "react-icons/fa6";
 import Option from "./option";
+import { projectService } from "../api/services/projectService";
 
 interface ProjectProps {
   projectID: string;
   trayName: string;
   title: string;
+  onSelectProject: (projectID: string) => void;
+  onDeleteProject: (projectID: string) => void;
+  onTrayToggle: (trayName: string) => void;
   isTrayOpen: boolean;
 }
 
-function Project({ title, isTrayOpen }: ProjectProps) {
+function Project({
+  projectID,
+  trayName,
+  title,
+  isTrayOpen,
+  onSelectProject,
+  onDeleteProject,
+  onTrayToggle,
+}: ProjectProps) {
   const [optionsIsOpen, setOptsIsOpen] = useState(false);
 
   function handleProjectSelect() {
-    console.log(title);
+    onSelectProject(projectID);
+    onTrayToggle(trayName);
   }
 
   function handleProjectDelete() {
-    console.log("Project Delete");
+    console.log(`Delect Project: ${projectID}`);
+    (async () => {
+      const deleteProject = await projectService.delete_project(projectID);
+      if (deleteProject.success) {
+        onDeleteProject(projectID);
+      } else {
+        console.log("Delete Project failed");
+      }
+    })();
   }
 
   useEffect(() => {

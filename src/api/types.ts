@@ -52,6 +52,10 @@ export interface DeleteThreadResult {
   thread_id: string;
 }
 
+export interface DeleteProjectResult {
+  success: boolean;
+}
+
 export interface Message {
   index: number;
   content: string;
@@ -62,7 +66,7 @@ export interface Message {
   created_at?: string;
 }
 
-export interface ProjectMetaData {
+export interface ProjectsMetaData {
   project_id: string;
   title: string;
   created_at: string;
@@ -71,7 +75,34 @@ export interface ProjectMetaData {
 
 export interface ProjectsResult {
   success: boolean;
-  projects: ProjectMetaData[];
+  projects: ProjectsMetaData[];
+}
+
+export interface ModelMetaData {
+  provider: string;
+  provider_display_name: string;
+  model: string;
+  display_name: string;
+}
+
+export interface SupportedModelsResult {
+  success: boolean;
+  supported_models: ModelMetaData[];
+}
+
+export interface ProjectResult {
+  success: boolean;
+  project_id: string;
+  title: string;
+  instructions: string;
+  created_at: string;
+  updated_at: string;
+  threads?: ThreadMetaData[];
+}
+
+export interface ProjectUpdateResult {
+  success: boolean;
+  project_id: string;
 }
 
 export interface NewProjectResult {

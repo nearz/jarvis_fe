@@ -9,7 +9,6 @@ export const chatService = {
     chat: ChatRequest,
     threadID: string,
   ): AsyncGenerator<any, void, unknown> {
-    const threadURL = `/chat/${threadID}`;
-    yield* apiClient.streamIterator(threadURL, chat);
+    yield* apiClient.streamIterator(`/chat/${threadID}`, chat);
   },
 };

@@ -3,11 +3,13 @@ import { FaPlus } from "react-icons/fa6";
 import { RiChatNewLine } from "react-icons/ri";
 
 interface ChatHeaderProps extends StackProps {
+  isActiveChat: boolean;
   onChatToolsToggle: () => void;
   onNewChat: () => void;
 }
 
 function ChatHeader({
+  isActiveChat,
   onChatToolsToggle,
   onNewChat,
   ...rest
@@ -33,18 +35,20 @@ function ChatHeader({
           <RiChatNewLine />
         </Icon>
       </IconButton>
-      <IconButton
-        aria-label="Chat tools"
-        bg="teal.600"
-        _hover={{ bg: "teal.500" }}
-        size="xs"
-        variant="solid"
-        onClick={onChatToolsToggle}
-      >
-        <Icon>
-          <FaPlus />
-        </Icon>
-      </IconButton>
+      {!isActiveChat ? null : (
+        <IconButton
+          aria-label="Chat tools"
+          bg="teal.600"
+          _hover={{ bg: "teal.500" }}
+          size="xs"
+          variant="solid"
+          onClick={onChatToolsToggle}
+        >
+          <Icon>
+            <FaPlus />
+          </Icon>
+        </IconButton>
+      )}
     </VStack>
   );
 }

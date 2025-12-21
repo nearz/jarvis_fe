@@ -4,34 +4,52 @@ import Login from "./components/login";
 import Register from "./components/register";
 import { HStack, Box } from "@chakra-ui/react";
 import { useState } from "react";
+import { ModelsProvider } from "./contexts/modelContext";
 
 function App() {
-  const [register, setRegister] = useState(false);
-  const [loggedIn, setLoggedIn] = useState(false);
-  const [selectedThread, setSelectedThread] = useState<string | null>(null);
+  const [register, setRegister] = useState<boolean>(false);
+  const [loggedIn, setLoggedIn] = useState<boolean>(false);
+  const [selectedThread, setSelectedThread] = useState<string>("");
+  const [selectedProject, setSelectedProject] = useState<string>("");
 
   function handleSelectThread(threadID: string) {
-    console.log(threadID);
     setSelectedThread(threadID);
+    setSelectedProject("");
+  }
+
+  function handleSyncIDs(threadID: string, projectID: string) {
+    setSelectedThread(threadID);
+    setSelectedProject(projectID);
+  }
+
+  function handleSelectProject(projectID: string) {
+    setSelectedProject(projectID);
+    setSelectedThread("");
   }
 
   if (loggedIn) {
     return (
-      <Box
-        h="100vh"
-        w="100vw"
-        position="relative"
-        overflowX="hidden"
-        overflowY="hidden"
-      >
-        <HStack h="100%" position="relative" gap={0}>
-          <MainNav onSelectThread={handleSelectThread} />
-          <Chat
-            onNewChat={handleSelectThread}
-            selectedThreadID={selectedThread}
-          />
-        </HStack>
-      </Box>
+      <ModelsProvider>
+        <Box
+          h="100vh"
+          w="100vw"
+          position="relative"
+          overflowX="hidden"
+          overflowY="hidden"
+        >
+          <HStack h="100%" position="relative" gap={0}>
+            <MainNav
+              onSelectThread={handleSelectThread}
+              onSelectProject={handleSelectProject}
+            />
+            <Chat
+              selectedProjectID={selectedProject}
+              selectedThreadID={selectedThread}
+              onSyncIDs={handleSyncIDs}
+            />
+          </HStack>
+        </Box>
+      </ModelsProvider>
     );
   } else {
     if (register) {
