@@ -22,6 +22,34 @@ class ApiClient {
     return this.token;
   }
 
+  private getLocalISOString(): string {
+    const now = new Date();
+    const offset = -now.getTimezoneOffset();
+    const sign = offset >= 0 ? "+" : "-";
+    const pad = (n: number) => String(Math.abs(n)).padStart(2, "0");
+
+    const offsetHours = Math.floor(Math.abs(offset) / 60);
+    const offsetMins = Math.abs(offset) % 60;
+
+    return (
+      now.getFullYear() +
+      "-" +
+      pad(now.getMonth() + 1) +
+      "-" +
+      pad(now.getDate()) +
+      "T" +
+      pad(now.getHours()) +
+      ":" +
+      pad(now.getMinutes()) +
+      ":" +
+      pad(now.getSeconds()) +
+      sign +
+      pad(offsetHours) +
+      ":" +
+      pad(offsetMins)
+    );
+  }
+
   private async request<T>(
     endpoint: string,
     requiresAuth: boolean,
@@ -30,6 +58,7 @@ class ApiClient {
   ): Promise<T> {
     const requestHeaders: Record<string, string> = {
       "Content-Type": "application/json",
+      "Jarvis-Client-Timestamp": this.getLocalISOString(),
       ...headers,
     };
 
@@ -88,6 +117,7 @@ class ApiClient {
   ): AsyncGenerator<any, void, unknown> {
     const requestHeaders: Record<string, string> = {
       "Content-Type": "application/json",
+      "Jarvis-Client-Timestamp": this.getLocalISOString(),
       Accept: "text/event-stream",
     };
 
