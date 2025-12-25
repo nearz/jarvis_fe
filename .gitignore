@@ -7,15 +7,21 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
-node_modules
-dist
-dist-ssr
-*.local
+# Dependencies / builds
+node_modules/
+dist/
+dist-ssr/
+
+# Tool caches
+.vite/
+.cache/
+.eslintcache
+*.tsbuildinfo
 
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
-.idea
+.idea/
 .DS_Store
 *.suo
 *.ntvs*
@@ -28,6 +34,9 @@ todo.md
 cursor_review.md
 openapi.json
 temp-test/*
+
+# Env
 .env
 .env.local
 .env.*.local
+package-lock.json
