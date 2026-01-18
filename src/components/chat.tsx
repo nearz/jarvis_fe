@@ -6,11 +6,12 @@ import ChatTools from "./chatTools";
 import UserMessage from "./userMessage";
 import AiMessage from "./AiMessage";
 import ProjectView from "./projectView";
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useState, useEffect } from "react";
 import type { ChatRequest, Message } from "../api/types";
 import { chatService } from "../api/services/chatService";
 import { historyService } from "../api/services/historyService";
 import { projectService } from "../api/services/projectService";
+import { useScrollToBottom, useAutoScroll } from "../hooks";
 
 interface ChatProps {
   selectedProjectID: string;
@@ -25,50 +26,28 @@ function Chat({ selectedProjectID, selectedThreadID, onSyncIDs }: ChatProps) {
   const [isStreaming, setIsStreaming] = useState<boolean>(false);
   const [threadID, setThreadID] = useState<string>("");
   const [selectedModel, setSelectedModel] = useState("Select Model");
-  const scrollContainerRef = useRef<HTMLDivElement>(null);
-  const shouldAutoScrollRef = useRef<boolean>(true);
-  const SCROLL_THRESHOLD = 150;
+
+  // Scroll behavior managed by custom hook
+  const {
+    containerRef,
+    scrollToBottom,
+    scrollToBottomIfEnabled,
+    handleScroll,
+  } = useScrollToBottom({
+    threshold: 85,
+  });
+  //NOTE: When streaming completes and msgList is updated it will autoscroll
+  //even if the user scrolled outside of threshold. Fix?
+  //Autoscroll on thread load
+  useAutoScroll(scrollToBottom, [msgList]);
+  //Autoscroll on streaming and if user is within threshold
+  useAutoScroll(scrollToBottomIfEnabled, [streamingMsg]);
+
   const isActiveChat = threadID !== "" || msgList.length > 0;
 
   function handleSelectedModel(name: string) {
     setSelectedModel(name);
   }
-
-  const isNearBottom = useCallback(() => {
-    const container = scrollContainerRef.current;
-    if (!container) return true;
-    const { scrollTop, scrollHeight, clientHeight } = container;
-    return scrollHeight - scrollTop - clientHeight < SCROLL_THRESHOLD;
-  }, []);
-
-  const scrollToBottom = useCallback((behavior: ScrollBehavior = "smooth") => {
-    const container = scrollContainerRef.current;
-    if (container) {
-      container.scrollTo({
-        top: container.scrollHeight,
-        behavior,
-      });
-    }
-  }, []);
-
-  const handleScroll = useCallback(() => {
-    shouldAutoScrollRef.current = isNearBottom();
-  }, [isNearBottom]);
-
-  // Auto-scroll on new messages
-  useEffect(() => {
-    if (shouldAutoScrollRef.current) {
-      scrollToBottom("smooth");
-    }
-  }, [msgList, scrollToBottom]);
-
-  // Auto-scroll during streaming
-  // TODO: Not always working, stops while streaming
-  useEffect(() => {
-    if (isStreaming && shouldAutoScrollRef.current) {
-      scrollToBottom("smooth");
-    }
-  }, [streamingMsg, isStreaming, scrollToBottom]);
 
   function handleNewChat() {
     setMsgList([]);
@@ -84,7 +63,9 @@ function Chat({ selectedProjectID, selectedThreadID, onSyncIDs }: ChatProps) {
     }
   }, [selectedThreadID]);
 
+  //Load thread and messages
   useEffect(() => {
+    //NOTE: What is cancelled doing? How ot use?
     if (!selectedThreadID) return;
     if (selectedThreadID === threadID) return;
     let cancelled = false;
@@ -95,8 +76,6 @@ function Chat({ selectedProjectID, selectedThreadID, onSyncIDs }: ChatProps) {
         if (resp.success && resp.messages.length > 0) {
           setMsgList(resp.messages);
           setThreadID(selectedThreadID);
-          shouldAutoScrollRef.current = true;
-          setTimeout(() => scrollToBottom("instant"), 0);
         }
       } catch (err) {
         if (!cancelled) {
@@ -109,9 +88,10 @@ function Chat({ selectedProjectID, selectedThreadID, onSyncIDs }: ChatProps) {
     };
   }, [selectedThreadID, scrollToBottom]);
 
+  // Submite new chat
   function handleSubmitChat(chatRequest: ChatRequest) {
     //Need to move new message to after api call so that it does not add it until call success.
-    shouldAutoScrollRef.current = true;
+    // enableAutoScroll();
     setMsgList((prev) => [
       ...prev,
       {
@@ -124,6 +104,7 @@ function Chat({ selectedProjectID, selectedThreadID, onSyncIDs }: ChatProps) {
     void submitChat(chatRequest);
   }
 
+  // Establish correct endpoint and get the async-generator
   async function submitChat(chatRequest: ChatRequest) {
     let stream = null;
     if (selectedProjectID !== "") {
@@ -155,6 +136,7 @@ function Chat({ selectedProjectID, selectedThreadID, onSyncIDs }: ChatProps) {
     setStreamingMsg("");
   }
 
+  //handle streaming tokens from the async-generator
   async function streamer(
     stream: AsyncGenerator<any, unknown, void>,
   ): Promise<string> {
@@ -244,7 +226,7 @@ function Chat({ selectedProjectID, selectedThreadID, onSyncIDs }: ChatProps) {
         ) : (
           <>
             <Box
-              ref={scrollContainerRef}
+              ref={containerRef}
               onScroll={handleScroll}
               flex="1"
               top="0px"

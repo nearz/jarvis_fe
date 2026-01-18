@@ -5,9 +5,10 @@ import NewProject from "./newProject";
 import Project from "./project";
 import { Text, Box } from "@chakra-ui/react";
 import type { ThreadMetaData, ProjectsMetaData } from "../api/types";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { historyService } from "../api/services/historyService";
 import { projectService } from "../api/services/projectService";
+import { useDelayedClose } from "../hooks";
 
 interface MainNavProps {
   onSelectThread: (threadID: string) => void;
@@ -21,23 +22,26 @@ function MainNav({ onSelectThread, onSelectProject }: MainNavProps) {
   const [projects, setProjects] = useState<ProjectsMetaData[]>([]);
   const [callProjects, setCallProjects] = useState(false);
 
-  const closeTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const CLOSE_DELAY_MS = 1000;
+  // Close handlers for each tray - use functional setState to get current value
+  // and avoid stale closures when the timer fires
+  const closeChatsTray = useCallback(() => {
+    setActiveTray((current) => (current === "chats" ? null : current));
+  }, []);
 
-  function handleMouseLeave(trayName: string) {
-    closeTimerRef.current = setTimeout(() => {
-      if (activeTray === trayName) {
-        handleTrayToggle(trayName);
-      }
-    }, CLOSE_DELAY_MS);
-  }
+  const closeProjectsTray = useCallback(() => {
+    setActiveTray((current) => (current === "projects" ? null : current));
+  }, []);
 
-  function handleMouseEnter() {
-    if (closeTimerRef.current) {
-      clearTimeout(closeTimerRef.current);
-      closeTimerRef.current = null;
-    }
-  }
+  // Separate hook instance for each tray
+  const chatsTrayCloser = useDelayedClose({
+    delay: 1000,
+    onClose: closeChatsTray,
+  });
+
+  const projectsTrayCloser = useDelayedClose({
+    delay: 1000,
+    onClose: closeProjectsTray,
+  });
 
   function handleTrayToggle(trayName: string) {
     setActiveTray(activeTray === trayName ? null : trayName);
@@ -123,8 +127,8 @@ function MainNav({ onSelectThread, onSelectProject }: MainNavProps) {
           activeTray === "chats" ? "translateX(0)" : "translateX(-100%)"
         }
         visibility={activeTray === "chats" ? "visible" : "hidden"}
-        onMouseEnter={handleMouseEnter}
-        onMouseLeave={() => handleMouseLeave("chats")}
+        onMouseEnter={chatsTrayCloser.handleMouseEnter}
+        onMouseLeave={chatsTrayCloser.handleMouseLeave}
       >
         <Text m={2} color="teal.500" fontWeight="semibold">
           Chats:
@@ -161,8 +165,8 @@ function MainNav({ onSelectThread, onSelectProject }: MainNavProps) {
           activeTray === "projects" ? "translateX(0)" : "translateX(-100%)"
         }
         visibility={activeTray === "projects" ? "visible" : "hidden"}
-        onMouseEnter={handleMouseEnter}
-        onMouseLeave={() => handleMouseLeave("projects")}
+        onMouseEnter={projectsTrayCloser.handleMouseEnter}
+        onMouseLeave={projectsTrayCloser.handleMouseLeave}
       >
         <NewProject />
         {projects.map((project) => (

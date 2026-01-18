@@ -3,7 +3,7 @@ import {
   useState,
   useEffect,
   useContext,
-  ReactNode,
+  type ReactNode,
 } from "react";
 import type { SupportedModelsResult } from "../api/types";
 import { modelService } from "../api/services/modelService";
