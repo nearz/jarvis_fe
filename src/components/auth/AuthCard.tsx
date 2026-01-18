@@ -12,15 +12,6 @@ interface AuthCardProps {
 /**
  * A centered card layout for authentication forms (login, register, etc.).
  * Provides consistent styling and error display.
- *
- * @example
- * ```tsx
- * <AuthCard onSubmit={handleSubmit} errorMessage={errorMsg}>
- *   <FormField label="Email" ... />
- *   <FormField label="Password" ... />
- *   <Button type="submit">Login</Button>
- * </AuthCard>
- * ```
  */
 function AuthCard({ children, errorMessage, onSubmit }: AuthCardProps) {
   return (

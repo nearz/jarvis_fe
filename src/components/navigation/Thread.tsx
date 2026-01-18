@@ -1,7 +1,7 @@
 import { FaRegTrashCan } from "react-icons/fa6";
 import { LuPencil } from "react-icons/lu";
-import NavListItem from "./NavListItem";
-import { historyService } from "../api/services/historyService";
+import { NavListItem } from "../common";
+import { historyService } from "../../api/services/historyService";
 
 interface ThreadProps {
   title: string;

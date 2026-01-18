@@ -1,4 +1,4 @@
-import Logo from "./logo";
+import Logo from "./Logo";
 import { Box, VStack, Icon, IconButton } from "@chakra-ui/react";
 import { CiChat2, CiFolderOn } from "react-icons/ci";
 

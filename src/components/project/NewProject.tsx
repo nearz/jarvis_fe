@@ -7,7 +7,7 @@ import {
   Input,
 } from "@chakra-ui/react";
 import { MdOutlineCreateNewFolder } from "react-icons/md";
-import { projectService } from "../api/services/projectService";
+import { projectService } from "../../api/services/projectService";
 import { useState } from "react";
 
 function NewProject() {

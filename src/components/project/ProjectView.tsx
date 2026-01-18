@@ -7,11 +7,11 @@ import {
   Box,
 } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
-import { projectService } from "../api/services/projectService";
-import type { ThreadMetaData, ChatRequest } from "../api/types";
-import UserChat from "./userChat";
-import ProjectUpdate from "./projectUpdate";
-import ProjectThreadOptions from "./projectThreadOptions";
+import { projectService } from "../../api/services/projectService";
+import type { ThreadMetaData, ChatRequest } from "../../api/types";
+import { UserChat } from "../chat";
+import ProjectUpdate from "./ProjectUpdate";
+import ProjectThreadOptions from "./ProjectThreadOptions";
 
 interface ProjectViewProps {
   selectedProjectID: string;

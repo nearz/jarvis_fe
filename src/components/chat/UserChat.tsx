@@ -15,9 +15,9 @@ import {
   FaSquareWebAwesomeStroke,
 } from "react-icons/fa6";
 import { TbBrandMetabrainz } from "react-icons/tb";
-import ModelSelect from "./modelSelect";
+import { ModelSelect } from "../common";
 import { useState, useEffect, useRef } from "react";
-import type { ChatRequest } from "../api/types";
+import type { ChatRequest } from "../../api/types";
 
 interface BorderRadiusProps {
   borderRadius?: number | string;
@@ -39,7 +39,6 @@ function UserChat({
   placeholder,
   selectedModel,
 }: UserChatProps) {
-  // const [selectedModel, setSelectedModel] = useState("Default");
   const [isOpen, setIsOpen] = useState(false);
   const [chatMsg, setChatMsg] = useState("");
   const textAreaRef = useRef<HTMLTextAreaElement>(null);
@@ -50,7 +49,6 @@ function UserChat({
 
   const handleModelSelect = (name: string) => {
     onModelSelect(name);
-    // setSelectedModel(name);
     setIsOpen(false);
   };
 

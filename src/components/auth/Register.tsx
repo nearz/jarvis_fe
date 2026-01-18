@@ -1,8 +1,8 @@
 import { Input, Button } from "@chakra-ui/react";
 import { Field } from "@chakra-ui/react";
 import { useState } from "react";
-import { authService } from "../api/services/authService";
-import { useAsyncService } from "../hooks";
+import { authService } from "../../api/services/authService";
+import { useAsyncService } from "../../hooks";
 import AuthCard from "./AuthCard";
 
 interface RegisterProps {
@@ -18,7 +18,6 @@ function Register({ onRegister }: RegisterProps) {
   const { execute: register, loading } = useAsyncService(authService.register);
 
   //TODO: Improve error handling in api/services, and hooks will be able to handle these better.
-  //TODO: Use hook callbacks once imrpoved error handling.
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const result = await register({

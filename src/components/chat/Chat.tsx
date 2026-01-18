@@ -1,17 +1,17 @@
 import { Box, Container, List, Text, VStack } from "@chakra-ui/react";
 
-import UserChat from "./userChat";
-import ChatHeader from "./chatHeader";
-import ChatTools from "./chatTools";
-import UserMessage from "./userMessage";
+import UserChat from "./UserChat";
+import ChatHeader from "./ChatHeader";
+import ChatTools from "./ChatTools";
+import UserMessage from "./UserMessage";
 import AiMessage from "./AiMessage";
-import ProjectView from "./projectView";
+import { ProjectView } from "../project";
 import { useState, useEffect } from "react";
-import type { ChatRequest, Message } from "../api/types";
-import { chatService } from "../api/services/chatService";
-import { historyService } from "../api/services/historyService";
-import { projectService } from "../api/services/projectService";
-import { useScrollToBottom, useAutoScroll } from "../hooks";
+import type { ChatRequest, Message } from "../../api/types";
+import { chatService } from "../../api/services/chatService";
+import { historyService } from "../../api/services/historyService";
+import { projectService } from "../../api/services/projectService";
+import { useScrollToBottom, useAutoScroll } from "../../hooks";
 
 interface ChatProps {
   selectedProjectID: string;
@@ -289,7 +289,6 @@ function Chat({ selectedProjectID, selectedThreadID, onSyncIDs }: ChatProps) {
       <ChatTools
         transition="all 0.3s"
         transform={chatToolsOpen ? "translateX(0)" : "translateX(100%)"}
-        // onMouseLeave={() => setChatToolsOpen(false)}
       />
     </Box>
   );

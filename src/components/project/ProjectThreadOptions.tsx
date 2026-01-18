@@ -4,8 +4,8 @@ import { BsThreeDotsVertical } from "react-icons/bs";
 import { FaRegTrashCan } from "react-icons/fa6";
 import { LuPencil } from "react-icons/lu";
 import { useState } from "react";
-import Option from "./option";
-import { historyService } from "../api/services/historyService";
+import { Option } from "../common";
+import { historyService } from "../../api/services/historyService";
 
 interface ProjectThreadOptsProps extends Omit<IconButtonProps, "children"> {
   threadID: string;

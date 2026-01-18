@@ -1,5 +1,5 @@
-import Model from "./model";
-import { useModels } from "../contexts/modelContext";
+import Model from "./Model";
+import { useModels } from "../../contexts/modelContext";
 import { Box, HStack, Text, Button } from "@chakra-ui/react";
 import { LuAtom } from "react-icons/lu";
 

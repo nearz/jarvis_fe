@@ -11,7 +11,7 @@ import {
 } from "@chakra-ui/react";
 import { LuPencil } from "react-icons/lu";
 import { useState, useEffect } from "react";
-import { projectService } from "../api/services/projectService";
+import { projectService } from "../../api/services/projectService";
 
 interface ProjectUpdateProps {
   projectID: string;

@@ -1,6 +1,6 @@
 import { FaRegTrashCan, FaPlus } from "react-icons/fa6";
-import NavListItem from "./NavListItem";
-import { projectService } from "../api/services/projectService";
+import { NavListItem } from "../common";
+import { projectService } from "../../api/services/projectService";
 
 interface ProjectProps {
   projectID: string;

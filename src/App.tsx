@@ -1,7 +1,6 @@
-import Chat from "./components/chat";
-import MainNav from "./components/mainNav";
-import Login from "./components/login";
-import Register from "./components/register";
+import { Chat } from "./components/chat";
+import { MainNav } from "./components/navigation";
+import { Login, Register } from "./components/auth";
 import { HStack, Box } from "@chakra-ui/react";
 import { useState } from "react";
 import { ModelsProvider } from "./contexts/modelContext";

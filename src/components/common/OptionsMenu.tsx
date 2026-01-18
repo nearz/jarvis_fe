@@ -2,7 +2,7 @@ import { Center, Popover, Portal } from "@chakra-ui/react";
 import type { CenterProps } from "@chakra-ui/react";
 import { useState, useEffect } from "react";
 import { BsThreeDotsVertical } from "react-icons/bs";
-import Option from "./option";
+import Option from "./Option";
 
 /**
  * Configuration for a single menu option
@@ -30,17 +30,6 @@ interface OptionsMenuProps extends CenterProps {
 /**
  * A reusable popover menu with configurable options.
  * Displays a three-dot trigger that opens a menu with action items.
- *
- * @example
- * ```tsx
- * <OptionsMenu
- *   options={[
- *     { label: "Rename", icon: <LuPencil />, onClick: handleRename },
- *     { label: "Delete", icon: <FaRegTrashCan />, onClick: handleDelete, color: "red.400" },
- *   ]}
- *   isParentOpen={isTrayOpen}
- * />
- * ```
  */
 function OptionsMenu({
   options,

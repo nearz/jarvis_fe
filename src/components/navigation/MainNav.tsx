@@ -1,14 +1,14 @@
-import SideBar from "./sideBar";
-import Tray from "./tray";
-import Thread from "./thread";
-import NewProject from "./newProject";
-import Project from "./project";
+import SideBar from "./SideBar";
+import Tray from "./Tray";
+import Thread from "./Thread";
+import Project from "./Project";
+import { NewProject } from "../project";
 import { Text, Box } from "@chakra-ui/react";
-import type { ThreadMetaData, ProjectsMetaData } from "../api/types";
+import type { ThreadMetaData, ProjectsMetaData } from "../../api/types";
 import { useState, useEffect, useCallback } from "react";
-import { historyService } from "../api/services/historyService";
-import { projectService } from "../api/services/projectService";
-import { useDelayedClose } from "../hooks";
+import { historyService } from "../../api/services/historyService";
+import { projectService } from "../../api/services/projectService";
+import { useDelayedClose } from "../../hooks";
 
 interface MainNavProps {
   onSelectThread: (threadID: string) => void;
@@ -179,7 +179,7 @@ function MainNav({ onSelectThread, onSelectProject }: MainNavProps) {
             onDeleteProject={handleProjectDelete}
             onTrayToggle={handleTrayToggle}
             isTrayOpen={activeTray === "projects"}
-          ></Project>
+          />
         ))}
       </Tray>
     </>
@@ -187,4 +187,3 @@ function MainNav({ onSelectThread, onSelectProject }: MainNavProps) {
 }
 
 export default MainNav;
-// <SideBar onToggleTray={() => setIsTrayOpen(!isTrayOpen)} />

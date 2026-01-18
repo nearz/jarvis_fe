@@ -17,28 +17,6 @@ interface NavListItemProps {
 /**
  * A navigation list item with title, optional subtitle, and options menu.
  * Used for threads and projects in the sidebar trays.
- *
- * @example
- * ```tsx
- * // Thread item with subtitle
- * <NavListItem
- *   title="Chat about React hooks"
- *   subtitle="Claude 3.5"
- *   onSelect={() => selectThread(id)}
- *   options={[
- *     { label: "Rename", icon: <LuPencil />, onClick: handleRename },
- *     { label: "Delete", icon: <FaRegTrashCan />, onClick: handleDelete, color: "red.400" },
- *   ]}
- *   isParentOpen={isTrayOpen}
- * />
- *
- * // Project item without subtitle
- * <NavListItem
- *   title="My Project"
- *   onSelect={() => selectProject(id)}
- *   options={[...]}
- * />
- * ```
  */
 function NavListItem({
   title,
