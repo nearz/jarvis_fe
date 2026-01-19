@@ -13,6 +13,8 @@ import { historyService } from "../../api/services/historyService";
 import { projectService } from "../../api/services/projectService";
 import { useScrollToBottom, useAutoScroll } from "../../hooks";
 
+type ViewState = "new-thread" | "project" | "thread";
+
 interface ChatProps {
   selectedProjectID: string;
   selectedThreadID: string;
@@ -26,6 +28,16 @@ function Chat({ selectedProjectID, selectedThreadID, onSyncIDs }: ChatProps) {
   const [isStreaming, setIsStreaming] = useState<boolean>(false);
   const [threadID, setThreadID] = useState<string>("");
   const [selectedModel, setSelectedModel] = useState("Select Model");
+
+  //Determine view state
+  const hasMsgs = msgList.length > 0;
+  const hasThread = threadID !== "";
+  const viewState: ViewState =
+    !hasThread && !hasMsgs
+      ? selectedProjectID !== ""
+        ? "project"
+        : "new-thread"
+      : "thread";
 
   // Scroll behavior managed by custom hook
   const {
@@ -56,18 +68,19 @@ function Chat({ selectedProjectID, selectedThreadID, onSyncIDs }: ChatProps) {
     onSyncIDs("", "");
   }
 
+  // Thread state effect - handles clearing and loading thread state
   useEffect(() => {
-    setThreadID(selectedThreadID);
+    // Clear state when no thread is selected
     if (!selectedThreadID) {
       setMsgList([]);
+      setThreadID("");
+      return;
     }
-  }, [selectedThreadID]);
 
-  //Load thread and messages
-  useEffect(() => {
-    //NOTE: What is cancelled doing? How ot use?
-    if (!selectedThreadID) return;
+    // Skip loading if we're already on this thread
+    // (e.g., when threadID was set internally after creating a new thread)
     if (selectedThreadID === threadID) return;
+
     let cancelled = false;
     (async () => {
       try {
@@ -86,7 +99,8 @@ function Chat({ selectedProjectID, selectedThreadID, onSyncIDs }: ChatProps) {
     return () => {
       cancelled = true;
     };
-  }, [selectedThreadID, scrollToBottom]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedThreadID]);
 
   // Submite new chat
   function handleSubmitChat(chatRequest: ChatRequest) {
@@ -187,7 +201,8 @@ function Chat({ selectedProjectID, selectedThreadID, onSyncIDs }: ChatProps) {
           onNewChat={handleNewChat}
           onChatToolsToggle={() => setChatToolsOpen(!chatToolsOpen)}
         />
-        {threadID === "" && selectedProjectID === "" && msgList.length <= 0 ? (
+        {viewState === "new-thread" && (
+          //New Thread
           <VStack
             position="absolute"
             left="50%"
@@ -204,9 +219,9 @@ function Chat({ selectedProjectID, selectedThreadID, onSyncIDs }: ChatProps) {
               borderRadiusProps={{ borderRadius: 5 }}
             />
           </VStack>
-        ) : selectedProjectID !== "" &&
-          threadID === "" &&
-          msgList.length <= 0 ? (
+        )}
+        {viewState === "project" && (
+          //Project View
           <Box
             position="absolute"
             left="50%"
@@ -223,7 +238,9 @@ function Chat({ selectedProjectID, selectedThreadID, onSyncIDs }: ChatProps) {
               selectedProjectID={selectedProjectID}
             />
           </Box>
-        ) : (
+        )}
+        {viewState === "thread" && (
+          //Existing Thread
           <>
             <Box
               ref={containerRef}
