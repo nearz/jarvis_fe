@@ -1,15 +1,16 @@
 import { VStack, Icon, IconButton, type StackProps } from "@chakra-ui/react";
 import { FaPlus } from "react-icons/fa6";
 import { RiChatNewLine } from "react-icons/ri";
+import type { ViewState } from "./Chat";
 
 interface ChatHeaderProps extends StackProps {
-  isActiveChat: boolean;
+  viewState: ViewState;
   onChatToolsToggle: () => void;
   onNewChat: () => void;
 }
 
 function ChatHeader({
-  isActiveChat,
+  viewState,
   onChatToolsToggle,
   onNewChat,
   ...rest
@@ -35,7 +36,7 @@ function ChatHeader({
           <RiChatNewLine />
         </Icon>
       </IconButton>
-      {!isActiveChat ? null : (
+      {viewState !== "thread" ? null : (
         <IconButton
           aria-label="Chat tools"
           bg="teal.600"
