@@ -1,6 +1,7 @@
 import { FaRegTrashCan, FaPlus } from "react-icons/fa6";
 import { NavListItem } from "../common";
 import { projectService } from "../../api/services/projectService";
+import { useAsyncService } from "../../hooks";
 
 interface ProjectProps {
   projectID: string;
@@ -21,6 +22,22 @@ function Project({
   onDeleteProject,
   onTrayToggle,
 }: ProjectProps) {
+  const { execute: deleteProject } = useAsyncService(
+    projectService.delete_project,
+    {
+      onSuccess: (result) => {
+        if (result.success) {
+          onDeleteProject(projectID);
+        } else {
+          console.log("Delete Project failed");
+        }
+      },
+      onError: (error) => {
+        console.error("Delete Project error:", error);
+      },
+    },
+  );
+
   function handleProjectSelect() {
     onSelectProject(projectID);
     onTrayToggle(trayName);
@@ -28,14 +45,7 @@ function Project({
 
   function handleProjectDelete() {
     console.log(`Delete Project: ${projectID}`);
-    (async () => {
-      const deleteProject = await projectService.delete_project(projectID);
-      if (deleteProject.success) {
-        onDeleteProject(projectID);
-      } else {
-        console.log("Delete Project failed");
-      }
-    })();
+    deleteProject(projectID);
   }
 
   function handleNewChat() {

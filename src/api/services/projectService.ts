@@ -6,6 +6,7 @@ import type {
   ChatRequest,
   ProjectResult,
   ProjectUpdateResult,
+  ProjectUpdateRequest,
   DeleteProjectResult,
 } from "../types";
 
@@ -113,15 +114,10 @@ export const projectService = {
       };
     }
   },
-  async projectUpdate(
-    projectID: string,
-    title: string,
-    inst: string,
-  ): Promise<ProjectUpdateResult> {
+  async projectUpdate(req: ProjectUpdateRequest): Promise<ProjectUpdateResult> {
     try {
-      const req = { title: title, instructions: inst };
       const resp = await apiClient.post<ProjectUpdateResult>(
-        `/projects/${projectID}`,
+        `/projects/${req.project_id}`,
         req,
         true,
       );

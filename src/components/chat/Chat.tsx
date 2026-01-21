@@ -6,6 +6,7 @@ import ThreadView from "./ThreadView";
 import { ProjectView } from "../project";
 import { useState } from "react";
 import { useChatStream, useThreadLoader } from "../../hooks";
+import type { Message } from "../../api/types";
 
 export type ViewState = "new-thread" | "project" | "thread";
 
@@ -19,22 +20,18 @@ function Chat({ selectedProjectID, selectedThreadID, onSyncIDs }: ChatProps) {
   const [chatToolsOpen, setChatToolsOpen] = useState(false);
   const [threadID, setThreadID] = useState<string>("");
   const [selectedModel, setSelectedModel] = useState("Select Model");
+  const [msgList, setMsgList] = useState<Message[]>([]);
 
-  const {
-    msgList,
-    setMsgList,
-    streamingMsg,
-    isStreaming,
-    handleSubmitChat,
-    clearMessages,
-  } = useChatStream({
-    threadID,
-    projectID: selectedProjectID,
-    onThreadCreated: (id) => {
-      setThreadID(id);
-      onSyncIDs(id, selectedProjectID);
-    },
-  });
+  const { streamingMsg, isStreaming, handleSubmitChat, clearMessages } =
+    useChatStream({
+      threadID,
+      projectID: selectedProjectID,
+      onThreadCreated: (id) => {
+        setThreadID(id);
+        onSyncIDs(id, selectedProjectID);
+      },
+      setMsgList,
+    });
 
   useThreadLoader({
     selectedThreadID,

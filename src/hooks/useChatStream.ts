@@ -7,11 +7,10 @@ interface UseChatStreamOptions {
   threadID: string;
   projectID: string;
   onThreadCreated: (threadID: string) => void;
+  setMsgList: React.Dispatch<React.SetStateAction<Message[]>>;
 }
 
 interface UseChatStreamReturn {
-  msgList: Message[];
-  setMsgList: React.Dispatch<React.SetStateAction<Message[]>>;
   streamingMsg: string;
   isStreaming: boolean;
   handleSubmitChat: (chatRequest: ChatRequest) => void;
@@ -29,7 +28,7 @@ interface UseChatStreamReturn {
  *
  * @example
  * ```tsx
- * const { msgList, streamingMsg, isStreaming, handleSubmitChat } = useChatStream({
+ * const { streamingMsg, isStreaming, handleSubmitChat } = useChatStream({
  *   threadID,
  *   projectID: selectedProjectID,
  *   onThreadCreated: (id) => setThreadID(id),
@@ -40,8 +39,8 @@ export function useChatStream({
   threadID,
   projectID,
   onThreadCreated,
+  setMsgList,
 }: UseChatStreamOptions): UseChatStreamReturn {
-  const [msgList, setMsgList] = useState<Message[]>([]);
   const [streamingMsg, setStreamingMsg] = useState<string>("");
   const [isStreaming, setIsStreaming] = useState<boolean>(false);
 
@@ -69,19 +68,8 @@ export function useChatStream({
    * Establish correct endpoint and get the async-generator
    */
   async function submitChat(chatRequest: ChatRequest) {
-    let stream = null;
-    if (projectID !== "") {
-      stream =
-        threadID !== ""
-          ? projectService.projectsChat(chatRequest, projectID, threadID)
-          : projectService.projectsNewChat(chatRequest, projectID);
-    } else {
-      stream =
-        threadID !== ""
-          ? chatService.chat(chatRequest, threadID)
-          : chatService.newChat(chatRequest);
-    }
-    const fullContent = await streamer(stream);
+    const serviceGenerator = selectService(chatRequest, projectID, threadID);
+    const fullContent = await streamer(serviceGenerator);
     setMsgList((prev) => [
       ...prev,
       {
@@ -119,11 +107,33 @@ export function useChatStream({
   }
 
   return {
-    msgList,
-    setMsgList,
     streamingMsg,
     isStreaming,
     handleSubmitChat,
     clearMessages,
   };
+}
+
+/**
+ * Select service depending on thread id and project id
+ */
+
+function selectService(
+  chatRequest: ChatRequest,
+  projectID: string,
+  threadID: string,
+): AsyncGenerator<any, unknown, void> {
+  let stream = null;
+  if (projectID !== "") {
+    stream =
+      threadID !== ""
+        ? projectService.projectsChat(chatRequest, projectID, threadID)
+        : projectService.projectsNewChat(chatRequest, projectID);
+  } else {
+    stream =
+      threadID !== ""
+        ? chatService.chat(chatRequest, threadID)
+        : chatService.newChat(chatRequest);
+  }
+  return stream;
 }

@@ -15,19 +15,25 @@ function Login({ onLogin, goToRegister }: LoginProps) {
   const [password, setPassword] = useState("");
   const [errorMsg, setErrMsg] = useState<string | null>(null);
 
-  const { execute: login, loading } = useAsyncService(authService.login);
-
   //TODO: Improve error handling in api/services, and hooks will be able to handle these better.
-  const handleSubmit = async (e: React.FormEvent) => {
+  const { execute: login, loading } = useAsyncService(authService.login, {
+    onSuccess: (result) => {
+      if (result.success) {
+        onLogin(true);
+      } else {
+        setErrMsg(result.error);
+      }
+    },
+    onError: (err) => {
+      console.error(err);
+      setErrMsg("Network Error");
+    },
+  });
+
+  function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    const result = await login({ email, password });
-    if (!result) return;
-    if (!result.success) {
-      setErrMsg(result.error);
-    } else {
-      onLogin(true);
-    }
-  };
+    login({ email, password });
+  }
 
   return (
     <AuthCard onSubmit={handleSubmit} errorMessage={errorMsg}>

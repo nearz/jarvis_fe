@@ -2,6 +2,8 @@ import { useEffect } from "react";
 import type { Message } from "../api/types";
 import { historyService } from "../api/services/historyService";
 
+//NOTES: Should I add loading state?
+
 interface UseThreadLoaderOptions {
   /** The thread ID selected from navigation/external source */
   selectedThreadID: string;
@@ -38,6 +40,7 @@ interface UseThreadLoaderOptions {
  * });
  * ```
  */
+
 export function useThreadLoader({
   selectedThreadID,
   currentThreadID,
@@ -45,33 +48,36 @@ export function useThreadLoader({
   onThreadCleared,
 }: UseThreadLoaderOptions): void {
   useEffect(() => {
-    // Clear state when no thread is selected
     if (!selectedThreadID) {
       onThreadCleared();
       return;
     }
 
-    // Skip loading if we're already on this thread
-    // (e.g., when threadID was set internally after creating a new thread)
     if (selectedThreadID === currentThreadID) return;
 
     let cancelled = false;
-    (async () => {
-      try {
-        const resp = await historyService.threadHistory(selectedThreadID);
-        if (cancelled) return;
-        if (resp.success && resp.messages.length > 0) {
-          onThreadLoaded(resp.messages, selectedThreadID);
-        }
-      } catch (err) {
-        if (!cancelled) {
-          console.log("Error loading thread", err);
-        }
-      }
-    })();
+    loadThreadHistory(selectedThreadID, onThreadLoaded, () => cancelled);
 
     return () => {
       cancelled = true;
     };
   }, [selectedThreadID]);
+}
+
+async function loadThreadHistory(
+  threadID: string,
+  onLoaded: (msgs: Message[], threadID: string) => void,
+  isCancelled: () => boolean,
+): Promise<void> {
+  try {
+    const resp = await historyService.threadHistory(threadID);
+    if (isCancelled()) return;
+    if (resp.success && resp.messages.length > 0) {
+      onLoaded(resp.messages, threadID);
+    }
+  } catch (err) {
+    if (!isCancelled()) {
+      console.log("Error loading thread", err);
+    }
+  }
 }

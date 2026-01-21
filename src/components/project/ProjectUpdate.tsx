@@ -10,47 +10,42 @@ import {
   Text,
 } from "@chakra-ui/react";
 import { LuPencil } from "react-icons/lu";
-import { useState, useEffect } from "react";
 import { projectService } from "../../api/services/projectService";
+import { useProjectDetails, useAsyncService } from "../../hooks";
 
 interface ProjectUpdateProps {
   projectID: string;
 }
 
 function ProjectUpdate({ projectID }: ProjectUpdateProps) {
-  const [instructions, setInstructions] = useState("temp");
-  const [title, setTitle] = useState("");
+  const { instructions, title, setInstructions, setTitle } = useProjectDetails({
+    projectID,
+  });
 
-  useEffect(() => {
-    if (!projectID) return;
-    (async () => {
-      try {
-        const resp = await projectService.getProjectOmitThreads(projectID);
-        if (resp.success) {
-          setTitle(resp.title);
-          setInstructions(resp.instructions);
+  //TODO: Improve error handling in api/services, and hooks will be able to handle these better.
+  //TODO: How to display error and success. Toast and close modal?
+  const { execute: projectUpdate } = useAsyncService(
+    projectService.projectUpdate,
+    {
+      onSuccess: (result) => {
+        if (result.success) {
+          console.log("Update Project Details success");
+        } else {
+          console.log("Update Project Details error");
         }
-      } catch (err) {
-        console.log("Error loading project", err);
-      }
-    })();
-  }, [projectID]);
+      },
+      onError: (err) => {
+        console.error("Update Project Details:", err);
+      },
+    },
+  );
 
   function handleSubmitProjectUpdate() {
-    (async () => {
-      try {
-        const resp = await projectService.projectUpdate(
-          projectID,
-          title,
-          instructions,
-        );
-        if (resp.success) {
-          console.log("Updated project successfuly");
-        }
-      } catch (err) {
-        console.log("Error loading project", err);
-      }
-    })();
+    projectUpdate({
+      project_id: projectID,
+      title: title,
+      instructions: instructions,
+    });
   }
 
   function handleInstUpdate(e: React.ChangeEvent<HTMLTextAreaElement>) {

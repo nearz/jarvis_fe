@@ -9,6 +9,7 @@ import {
 import { MdOutlineCreateNewFolder } from "react-icons/md";
 import { projectService } from "../../api/services/projectService";
 import { useState } from "react";
+import { useAsyncService } from "../../hooks";
 
 function NewProject() {
   const [title, setTitle] = useState("");
@@ -17,21 +18,27 @@ function NewProject() {
     setTitle(e.target.value);
   }
 
-  function handleSumbitProject() {
+  //TODO: Improve error handling in api/services, and hooks will be able to handle these better.
+  //TODO: How to present errors?
+  const { execute: newProject } = useAsyncService(projectService.newProject, {
+    onSuccess: (result) => {
+      if (result.success) {
+        console.log("New Project Creation success");
+      } else {
+        console.log("New Project Creation error");
+      }
+    },
+    onError: (err) => {
+      console.error("New Project Creation error: ", err);
+    },
+  });
+
+  const handleSumbitProject = async () => {
     console.log("Submit New Project");
     if (title.trim()) {
-      (async () => {
-        const submitProj = await projectService.newProject({
-          title: title.trim(),
-        });
-        if (submitProj.success) {
-          console.log(submitProj.project_id);
-        } else {
-          console.log("Error creating new project");
-        }
-      })();
+      newProject({ title: title.trim() });
     }
-  }
+  };
 
   return (
     <Dialog.Root>

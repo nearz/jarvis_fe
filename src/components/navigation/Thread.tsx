@@ -2,6 +2,7 @@ import { FaRegTrashCan } from "react-icons/fa6";
 import { LuPencil } from "react-icons/lu";
 import { NavListItem } from "../common";
 import { historyService } from "../../api/services/historyService";
+import { useAsyncService } from "../../hooks";
 
 interface ThreadProps {
   title: string;
@@ -24,6 +25,22 @@ function Thread({
   onDeleteThread,
   onTrayToggle,
 }: ThreadProps) {
+  const { execute: deleteThread } = useAsyncService(
+    historyService.deleteThread,
+    {
+      onSuccess: (result) => {
+        if (result.success) {
+          onDeleteThread(threadID);
+        } else {
+          console.log("Delete thread failed");
+        }
+      },
+      onError: (error) => {
+        console.error("Delete thread error:", error);
+      },
+    },
+  );
+
   function handleThreadSelect() {
     onSelectThread(threadID);
     onTrayToggle(trayName);
@@ -31,14 +48,7 @@ function Thread({
 
   function handleThreadDelete() {
     console.log(`Delete: ${threadID}`);
-    (async () => {
-      const deleteThread = await historyService.deleteThread(threadID);
-      if (deleteThread.success) {
-        onDeleteThread(threadID);
-      } else {
-        console.log("Delete thread failed");
-      }
-    })();
+    deleteThread(threadID);
   }
 
   function handleThreadRename() {

@@ -15,23 +15,29 @@ function Register({ onRegister }: RegisterProps) {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [errorMsg, setErrMsg] = useState<string | null>(null);
 
-  const { execute: register, loading } = useAsyncService(authService.register);
-
   //TODO: Improve error handling in api/services, and hooks will be able to handle these better.
-  const handleSubmit = async (e: React.FormEvent) => {
+  const { execute: register, loading } = useAsyncService(authService.register, {
+    onSuccess: (result) => {
+      if (result.success) {
+        onRegister(false);
+      } else {
+        setErrMsg("Error Registering");
+      }
+    },
+    onError: (err) => {
+      console.error(err);
+      setErrMsg("Network Error");
+    },
+  });
+
+  function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    const result = await register({
+    register({
       email: email,
       password: password,
       password_confirm: confirmPassword,
     });
-    if (!result) return;
-    if (!result.success) {
-      setErrMsg("Registration Failed");
-    } else {
-      onRegister(false);
-    }
-  };
+  }
 
   return (
     <AuthCard onSubmit={handleSubmit} errorMessage={errorMsg}>

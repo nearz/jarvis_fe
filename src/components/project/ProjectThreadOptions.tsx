@@ -6,6 +6,7 @@ import { LuPencil } from "react-icons/lu";
 import { useState } from "react";
 import { Option } from "../common";
 import { historyService } from "../../api/services/historyService";
+import { useAsyncService } from "../../hooks";
 
 interface ProjectThreadOptsProps extends Omit<IconButtonProps, "children"> {
   threadID: string;
@@ -19,17 +20,25 @@ function ProjectThreadOptions({
   onOpenChange,
   ...iconButtonProps
 }: ProjectThreadOptsProps) {
+  const { execute: deleteThread } = useAsyncService(
+    historyService.deleteThread,
+    {
+      onSuccess: (result) => {
+        if (result.success) {
+          onDeleteThread(threadID);
+        } else {
+          console.log("Delete Project Thread Error");
+        }
+      },
+      onError: (err) => {
+        console.error("Delete Project Thread Error:", err);
+      },
+    },
+  );
+
   function handleThreadDelete(e: React.MouseEvent) {
     e.stopPropagation();
-    console.log(`Delete: ${threadID}`);
-    (async () => {
-      const deleteThread = await historyService.deleteThread(threadID);
-      if (deleteThread.success) {
-        onDeleteThread(threadID);
-      } else {
-        console.log("Delete thread failed");
-      }
-    })();
+    deleteThread(threadID);
   }
 
   function handleThreadRename(e: React.MouseEvent) {

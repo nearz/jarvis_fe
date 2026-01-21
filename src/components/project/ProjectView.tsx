@@ -1,10 +1,10 @@
 import { VStack, HStack, Text, List, Separator, Box } from "@chakra-ui/react";
-import { useEffect, useState } from "react";
-import { projectService } from "../../api/services/projectService";
-import type { ThreadMetaData, ChatRequest } from "../../api/types";
+import { useState } from "react";
+import type { ChatRequest } from "../../api/types";
 import { UserChat } from "../chat";
 import ProjectUpdate from "./ProjectUpdate";
 import ProjectThreadOptions from "./ProjectThreadOptions";
+import { useProject } from "../../hooks";
 
 interface ProjectViewProps {
   selectedProjectID: string;
@@ -29,8 +29,6 @@ function ProjectView({
   onSubmitChat,
   onThreadSelect,
 }: ProjectViewProps) {
-  const [projectTitle, setProjectTitle] = useState("");
-  const [threads, setThreads] = useState<ThreadMetaData[]>([]);
   const [openPopoverThreadId, setOpenPopoverThreadId] = useState<string | null>(
     null,
   );
@@ -39,23 +37,9 @@ function ProjectView({
     setOpenPopoverThreadId(isOpen ? threadID : null);
   }
 
-  function handleThreadDelete(threadID: string) {
-    setThreads((prevThreads) =>
-      prevThreads.filter((thread) => thread.thread_id !== threadID),
-    );
-  }
-
-  useEffect(() => {
-    (async () => {
-      const resp = await projectService.getProject(selectedProjectID);
-      if (resp.success) {
-        setProjectTitle(resp.title);
-        setThreads(resp.threads !== undefined ? resp.threads : []);
-      } else {
-        console.log("Error get project data");
-      }
-    })();
-  }, [selectedProjectID]);
+  const { projectTitle, threads, handleThreadDelete } = useProject({
+    projectID: selectedProjectID,
+  });
 
   return (
     <Box
