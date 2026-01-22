@@ -37,8 +37,9 @@ function ProjectView({
     setOpenPopoverThreadId(isOpen ? threadID : null);
   }
 
-  const { projectTitle, threads, handleThreadDelete } = useProject({
+  const { title, threads, handleThreadDelete } = useProject({
     projectID: selectedProjectID,
+    flag: "project",
   });
 
   return (
@@ -53,12 +54,12 @@ function ProjectView({
       <VStack align="stretch" w="full">
         <HStack justify="space-between" px={1}>
           <Text fontSize="3xl" fontWeight="bold">
-            {projectTitle}
+            {title}
           </Text>
           <ProjectUpdate projectID={selectedProjectID} />
         </HStack>
         <UserChat
-          placeholder={`New chat in ${projectTitle}...`}
+          placeholder={`New chat in ${title}...`}
           selectedModel={selectedModel}
           onSubmitChat={onSubmitChat}
           onModelSelect={onModelSelect}

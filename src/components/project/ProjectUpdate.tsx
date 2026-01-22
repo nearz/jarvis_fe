@@ -11,15 +11,16 @@ import {
 } from "@chakra-ui/react";
 import { LuPencil } from "react-icons/lu";
 import { projectService } from "../../api/services/projectService";
-import { useProjectDetails, useAsyncService } from "../../hooks";
+import { useAsyncService, useProject } from "../../hooks";
 
 interface ProjectUpdateProps {
   projectID: string;
 }
 
 function ProjectUpdate({ projectID }: ProjectUpdateProps) {
-  const { instructions, title, setInstructions, setTitle } = useProjectDetails({
-    projectID,
+  const { instructions, title, setInstructions, setProjectTitle } = useProject({
+    projectID: projectID,
+    flag: "details",
   });
 
   //TODO: Improve error handling in api/services, and hooks will be able to handle these better.
@@ -85,7 +86,7 @@ function ProjectUpdate({ projectID }: ProjectUpdateProps) {
               </Text>
               <Input
                 value={title}
-                onChange={(e) => setTitle(e.target.value)}
+                onChange={(e) => setProjectTitle(e.target.value)}
                 w="full"
                 mb={3}
                 flexShrink={0}
