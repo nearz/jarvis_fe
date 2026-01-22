@@ -251,3 +251,7 @@ export interface ApiError {
   /** HTTP status code */
   statusCode: number;
 }
+
+export type StreamChunk =
+  | { type: "content"; text: string }
+  | { type: "done"; thread_id: string };

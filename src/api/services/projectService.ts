@@ -8,6 +8,7 @@ import type {
   ProjectUpdateResult,
   ProjectUpdateRequest,
   DeleteProjectResult,
+  StreamChunk,
 } from "../types";
 
 export const projectService = {
@@ -133,14 +134,14 @@ export const projectService = {
   async *projectsNewChat(
     chat: ChatRequest,
     projectID: string,
-  ): AsyncGenerator<any, void, unknown> {
+  ): AsyncGenerator<StreamChunk, void, unknown> {
     yield* apiClient.streamIterator(`/projects/${projectID}/chat`, chat);
   },
   async *projectsChat(
     chat: ChatRequest,
     projectID: string,
     threadID: string,
-  ): AsyncGenerator<any, void, unknown> {
+  ): AsyncGenerator<StreamChunk, void, unknown> {
     yield* apiClient.streamIterator(
       `/projects/${projectID}/chat/${threadID}`,
       chat,

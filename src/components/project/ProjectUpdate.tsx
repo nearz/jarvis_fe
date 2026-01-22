@@ -48,16 +48,6 @@ function ProjectUpdate({ projectID }: ProjectUpdateProps) {
     });
   }
 
-  function handleInstUpdate(e: React.ChangeEvent<HTMLTextAreaElement>) {
-    console.log(e.target.value);
-    setInstructions(e.target.value);
-  }
-
-  function handleTitleUpdate(e: React.ChangeEvent<HTMLInputElement>) {
-    console.log(e.target.value);
-    setTitle(e.target.value);
-  }
-
   return (
     <Dialog.Root>
       <Dialog.Trigger asChild>
@@ -94,8 +84,8 @@ function ProjectUpdate({ projectID }: ProjectUpdateProps) {
                 Project Title:
               </Text>
               <Input
-                defaultValue={title}
-                onChange={handleTitleUpdate}
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
                 w="full"
                 mb={3}
                 flexShrink={0}
@@ -107,8 +97,8 @@ function ProjectUpdate({ projectID }: ProjectUpdateProps) {
                 rules to follow.
               </Text>
               <Textarea
-                defaultValue={instructions}
-                onChange={handleInstUpdate}
+                value={instructions}
+                onChange={(e) => setInstructions(e.target.value)}
                 w="full"
                 flex="1"
                 resize="none"

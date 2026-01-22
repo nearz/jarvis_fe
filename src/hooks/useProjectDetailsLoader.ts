@@ -24,7 +24,7 @@ interface UseProjectDetailsReturn {
 export function useProjectDetails({
   projectID,
 }: UseProjectDetailsOptions): UseProjectDetailsReturn {
-  const [instructions, setInstructions] = useState("temp");
+  const [instructions, setInstructions] = useState("");
   const [title, setTitle] = useState("");
 
   function onLoaded(instructions: string, title: string) {

@@ -110,11 +110,11 @@ class ApiClient {
     }
   }
 
-  async *streamIterator(
+  async *streamIterator<T = unknown>(
     endpoint: string,
     data: unknown,
     requiresAuth = true,
-  ): AsyncGenerator<any, void, unknown> {
+  ): AsyncGenerator<T, void, unknown> {
     const requestHeaders: Record<string, string> = {
       "Content-Type": "application/json",
       "Jarvis-Client-Timestamp": this.getLocalISOString(),
@@ -157,9 +157,9 @@ class ApiClient {
           if (line.startsWith("data: ")) {
             const data = line.slice(6);
             try {
-              yield JSON.parse(data);
+              yield JSON.parse(data) as T;
             } catch {
-              yield data;
+              yield data as T;
             }
           }
         }

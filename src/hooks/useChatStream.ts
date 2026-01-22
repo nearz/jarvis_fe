@@ -1,5 +1,5 @@
 import { useState } from "react";
-import type { ChatRequest, Message } from "../api/types";
+import type { ChatRequest, Message, StreamChunk } from "../api/types";
 import { chatService } from "../api/services/chatService";
 import { projectService } from "../api/services/projectService";
 
@@ -46,40 +46,53 @@ export function useChatStream({
 
   /**
    * Handle streaming tokens from the async-generator
+   * TODO: How to present streaming errors?
    */
   async function streamer(
-    stream: AsyncGenerator<any, unknown, void>,
+    stream: AsyncGenerator<StreamChunk, unknown, void>,
   ): Promise<string> {
     let accumulate = "";
     setIsStreaming(true);
-    for await (const chunk of stream) {
-      if (chunk.type === "content") {
-        accumulate += chunk.text;
-        setStreamingMsg(accumulate);
-      } else if (chunk.type === "done") {
-        onThreadCreated(chunk.thread_id);
+    try {
+      for await (const chunk of stream) {
+        if (chunk.type === "content") {
+          accumulate += chunk.text;
+          setStreamingMsg(accumulate);
+        } else {
+          onThreadCreated(chunk.thread_id);
+        }
       }
+      return accumulate;
+    } catch (err) {
+      console.error("Streaming error: ", err);
+      return accumulate;
+    } finally {
+      setIsStreaming(false);
     }
-    setIsStreaming(false);
-    return accumulate;
   }
 
   /**
    * Establish correct endpoint and get the async-generator
+   * TODO: How to present errors on submitting chat?
    */
   async function submitChat(chatRequest: ChatRequest) {
-    const serviceGenerator = selectService(chatRequest, projectID, threadID);
-    const fullContent = await streamer(serviceGenerator);
-    setMsgList((prev) => [
-      ...prev,
-      {
-        index: prev.length,
-        content: fullContent,
-        llm: chatRequest.llm,
-        message_type: "ai",
-      },
-    ]);
-    setStreamingMsg("");
+    try {
+      const serviceGenerator = selectService(chatRequest, projectID, threadID);
+      const fullContent = await streamer(serviceGenerator);
+      setMsgList((prev) => [
+        ...prev,
+        {
+          index: prev.length,
+          content: fullContent,
+          llm: chatRequest.llm,
+          message_type: "ai",
+        },
+      ]);
+    } catch (err) {
+      console.error("Submit chat error: ", err);
+    } finally {
+      setStreamingMsg("");
+    }
   }
 
   /**
@@ -122,7 +135,7 @@ function selectService(
   chatRequest: ChatRequest,
   projectID: string,
   threadID: string,
-): AsyncGenerator<any, unknown, void> {
+): AsyncGenerator<StreamChunk, unknown, void> {
   let stream = null;
   if (projectID !== "") {
     stream =
