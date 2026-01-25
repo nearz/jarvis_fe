@@ -23,8 +23,6 @@ function MainNav({ onSelectThread, onSelectProject }: MainNavProps) {
     setActiveTray,
   } = useMainNav();
 
-  // Close handlers for each tray - use functional setState to get current value
-  // and avoid stale closures when the timer fires
   const closeChatsTray = useCallback(() => {
     setActiveTray((current) => (current === "threads" ? null : current));
   }, []);
@@ -33,7 +31,6 @@ function MainNav({ onSelectThread, onSelectProject }: MainNavProps) {
     setActiveTray((current) => (current === "projects" ? null : current));
   }, []);
 
-  // Separate hook instance for each tray
   const chatsTrayCloser = useDelayedClose({
     delay: 1000,
     onClose: closeChatsTray,

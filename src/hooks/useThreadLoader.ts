@@ -2,7 +2,8 @@ import { useEffect } from "react";
 import type { Message } from "../api/types";
 import { historyService } from "../api/services/historyService";
 
-//NOTES: Should I add loading state?
+/*TODO: Loading thread can show new-chat-view when there is network latency.
+How to correc this for better UX? Maybe have loading state here and just show blank if so?*/
 
 interface UseThreadLoaderOptions {
   /** The thread ID selected from navigation/external source */
