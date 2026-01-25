@@ -1,22 +1,20 @@
 import { Box } from "@chakra-ui/react";
-import ChatHeader from "./ChatHeader";
-import ChatTools from "./ChatTools";
-import NewThreadView from "./NewThreadView";
-import ThreadView from "./ThreadView";
+import MainViewHeader from "./MainViewHeader";
+import ChatTools from "../chat/ChatTools";
+import NewThreadView from "../chat/NewThreadView";
+import ThreadView from "../chat/ThreadView";
 import { ProjectView } from "../project";
 import { useState } from "react";
 import { useChatStream, useThreadLoader } from "../../hooks";
-import type { Message } from "../../api/types";
+import type { Message, ViewState } from "../../api/types";
 
-export type ViewState = "new-thread" | "project" | "thread";
-
-interface ChatProps {
+interface MainViewProps {
   selectedProjectID: string;
   selectedThreadID: string;
   onSyncIDs: (threadID: string, projectID: string) => void;
 }
 
-function Chat({ selectedProjectID, selectedThreadID, onSyncIDs }: ChatProps) {
+function MainView({ selectedProjectID, selectedThreadID, onSyncIDs }: MainViewProps) {
   const [chatToolsOpen, setChatToolsOpen] = useState(false);
   const [threadID, setThreadID] = useState<string>("");
   const [selectedModel, setSelectedModel] = useState("Select Model");
@@ -80,7 +78,7 @@ function Chat({ selectedProjectID, selectedThreadID, onSyncIDs }: ChatProps) {
         display="flex"
         flexDirection="column"
       >
-        <ChatHeader
+        <MainViewHeader
           position="absolute"
           top="0"
           right="0"
@@ -130,4 +128,4 @@ function Chat({ selectedProjectID, selectedThreadID, onSyncIDs }: ChatProps) {
   );
 }
 
-export default Chat;
+export default MainView;

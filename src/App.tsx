@@ -1,5 +1,4 @@
-import { Chat } from "./components/chat";
-import { MainNav } from "./components/navigation";
+import { MainNav, MainView } from "./components/navigation";
 import { Login, Register } from "./components/auth";
 import { HStack, Box } from "@chakra-ui/react";
 import { useState } from "react";
@@ -41,7 +40,7 @@ function App() {
               onSelectThread={handleSelectThread}
               onSelectProject={handleSelectProject}
             />
-            <Chat
+            <MainView
               selectedProjectID={selectedProject}
               selectedThreadID={selectedThread}
               onSyncIDs={handleSyncIDs}

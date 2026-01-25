@@ -255,3 +255,8 @@ export interface ApiError {
 export type StreamChunk =
   | { type: "content"; text: string }
   | { type: "done"; thread_id: string };
+
+/**
+ * Represents the current view state in the main view container.
+ */
+export type ViewState = "new-thread" | "project" | "thread";

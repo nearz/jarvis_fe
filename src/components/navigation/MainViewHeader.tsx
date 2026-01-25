@@ -1,20 +1,20 @@
 import { VStack, Icon, IconButton, type StackProps } from "@chakra-ui/react";
 import { FaPlus } from "react-icons/fa6";
 import { RiChatNewLine } from "react-icons/ri";
-import type { ViewState } from "./Chat";
+import type { ViewState } from "../../api/types";
 
-interface ChatHeaderProps extends StackProps {
+interface MainViewHeaderProps extends StackProps {
   viewState: ViewState;
   onChatToolsToggle: () => void;
   onNewChat: () => void;
 }
 
-function ChatHeader({
+function MainViewHeader({
   viewState,
   onChatToolsToggle,
   onNewChat,
   ...rest
-}: ChatHeaderProps) {
+}: MainViewHeaderProps) {
   return (
     <VStack
       bg="transparent"
@@ -54,4 +54,4 @@ function ChatHeader({
   );
 }
 
-export default ChatHeader;
+export default MainViewHeader;

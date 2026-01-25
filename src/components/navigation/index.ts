@@ -1,4 +1,6 @@
 export { default as MainNav } from "./MainNav";
+export { default as MainView } from "./MainView";
+export { default as MainViewHeader } from "./MainViewHeader";
 export { default as SideBar } from "./SideBar";
 export { default as Tray } from "./Tray";
 export { default as Logo } from "./Logo";
