@@ -3,16 +3,17 @@ import { LuPencil } from "react-icons/lu";
 import { NavListItem } from "../common";
 import { historyService } from "../../api/services/historyService";
 import { useAsyncService } from "../../hooks";
+import type { TrayName } from "../../hooks/useMainNav";
 
 interface ThreadProps {
   title: string;
   llm: string;
   threadID: string;
-  trayName: string;
+  trayName: TrayName;
   isTrayOpen: boolean;
   onSelectThread: (threadID: string) => void;
   onDeleteThread: (threadID: string) => void;
-  onTrayToggle: (trayName: string) => void;
+  onTrayToggle: (trayName: TrayName) => void;
 }
 
 function Thread({

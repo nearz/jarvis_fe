@@ -4,6 +4,7 @@ import type { ChatRequest } from "../../api/types";
 import { UserChat } from "../chat";
 import ProjectUpdate from "./ProjectUpdate";
 import ProjectThreadOptions from "./ProjectThreadOptions";
+import ProjectViewSkeleton from "./ProjectViewSkeleton";
 import { useProject } from "../../hooks";
 
 interface ProjectViewProps {
@@ -37,10 +38,14 @@ function ProjectView({
     setOpenPopoverThreadId(isOpen ? threadID : null);
   }
 
-  const { title, threads, handleThreadDelete } = useProject({
+  const { title, threads, loading, handleThreadDelete } = useProject({
     projectID: selectedProjectID,
     flag: "project",
   });
+
+  if (loading) {
+    return <ProjectViewSkeleton />;
+  }
 
   return (
     <Box

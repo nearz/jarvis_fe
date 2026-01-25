@@ -2,14 +2,15 @@ import { FaRegTrashCan, FaPlus } from "react-icons/fa6";
 import { NavListItem } from "../common";
 import { projectService } from "../../api/services/projectService";
 import { useAsyncService } from "../../hooks";
+import type { TrayName } from "../../hooks/useMainNav";
 
 interface ProjectProps {
   projectID: string;
-  trayName: string;
+  trayName: TrayName;
   title: string;
   onSelectProject: (projectID: string) => void;
   onDeleteProject: (projectID: string) => void;
-  onTrayToggle: (trayName: string) => void;
+  onTrayToggle: (trayName: TrayName) => void;
   isTrayOpen: boolean;
 }
 

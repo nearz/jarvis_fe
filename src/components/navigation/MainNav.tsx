@@ -4,11 +4,8 @@ import Thread from "./Thread";
 import Project from "./Project";
 import { NewProject } from "../project";
 import { Text, Box } from "@chakra-ui/react";
-import type { ThreadMetaData, ProjectsMetaData } from "../../api/types";
-import { useState, useEffect, useCallback } from "react";
-import { historyService } from "../../api/services/historyService";
-import { projectService } from "../../api/services/projectService";
-import { useDelayedClose } from "../../hooks";
+import { useCallback } from "react";
+import { useDelayedClose, useMainNav } from "../../hooks";
 
 interface MainNavProps {
   onSelectThread: (threadID: string) => void;
@@ -16,16 +13,20 @@ interface MainNavProps {
 }
 
 function MainNav({ onSelectThread, onSelectProject }: MainNavProps) {
-  const [activeTray, setActiveTray] = useState<string | null>(null);
-  const [threads, setThreads] = useState<ThreadMetaData[]>([]);
-  const [callHistory, setCallHistory] = useState(false);
-  const [projects, setProjects] = useState<ProjectsMetaData[]>([]);
-  const [callProjects, setCallProjects] = useState(false);
+  const {
+    threads,
+    projects,
+    activeTray,
+    handleTrayToggle,
+    handleThreadDelete,
+    handleProjectDelete,
+    setActiveTray,
+  } = useMainNav();
 
   // Close handlers for each tray - use functional setState to get current value
   // and avoid stale closures when the timer fires
   const closeChatsTray = useCallback(() => {
-    setActiveTray((current) => (current === "chats" ? null : current));
+    setActiveTray((current) => (current === "threads" ? null : current));
   }, []);
 
   const closeProjectsTray = useCallback(() => {
@@ -43,53 +44,6 @@ function MainNav({ onSelectThread, onSelectProject }: MainNavProps) {
     onClose: closeProjectsTray,
   });
 
-  function handleTrayToggle(trayName: string) {
-    setActiveTray(activeTray === trayName ? null : trayName);
-    if (trayName === "chats" && activeTray !== "chats") {
-      setCallHistory(!callHistory);
-    }
-    if (trayName === "projects" && activeTray !== "projects") {
-      setCallProjects(!callProjects);
-    }
-  }
-
-  function handleThreadDelete(threadID: string) {
-    console.log(`Nav Delete Thread: ${threadID}`);
-    setThreads((prevThreads) =>
-      prevThreads.filter((thread) => thread.thread_id !== threadID),
-    );
-  }
-
-  function handleProjectDelete(projectID: string) {
-    setProjects((prevProjects) =>
-      prevProjects.filter((project) => project.project_id !== projectID),
-    );
-  }
-
-  useEffect(() => {
-    (async () => {
-      console.log("chat history use effect executed.");
-      const threadHistory = await historyService.history();
-      if (threadHistory.success) {
-        setThreads(threadHistory.threads);
-      } else {
-        console.log("History fetch failed");
-      }
-    })();
-  }, [callHistory]);
-
-  useEffect(() => {
-    (async () => {
-      console.log("projects use effect executed.");
-      const projectList = await projectService.projects();
-      if (projectList.success) {
-        setProjects(projectList.projects);
-      } else {
-        console.log("Projects fetch failed");
-      }
-    })();
-  }, [callProjects]);
-
   return (
     <>
       {activeTray && (
@@ -106,11 +60,11 @@ function MainNav({ onSelectThread, onSelectProject }: MainNavProps) {
         />
       )}
       <SideBar
-        onChatsToggle={() => handleTrayToggle("chats")}
+        onChatsToggle={() => handleTrayToggle("threads")}
         onTrayTwoToggle={() => handleTrayToggle("projects")}
       />
       <Tray
-        name="chats"
+        name="threads"
         bg="gray.800"
         position="absolute"
         left="70px"
@@ -124,9 +78,9 @@ function MainNav({ onSelectThread, onSelectProject }: MainNavProps) {
         zIndex={8}
         transition="all 0.3s"
         transform={
-          activeTray === "chats" ? "translateX(0)" : "translateX(-100%)"
+          activeTray === "threads" ? "translateX(0)" : "translateX(-100%)"
         }
-        visibility={activeTray === "chats" ? "visible" : "hidden"}
+        visibility={activeTray === "threads" ? "visible" : "hidden"}
         onMouseEnter={chatsTrayCloser.handleMouseEnter}
         onMouseLeave={chatsTrayCloser.handleMouseLeave}
       >
@@ -137,13 +91,13 @@ function MainNav({ onSelectThread, onSelectProject }: MainNavProps) {
           <Thread
             key={thread.thread_id}
             threadID={thread.thread_id}
-            trayName="chats"
+            trayName="threads"
             title={thread.title}
             llm={thread.last_llm_used}
             onSelectThread={onSelectThread}
             onDeleteThread={handleThreadDelete}
             onTrayToggle={handleTrayToggle}
-            isTrayOpen={activeTray === "chats"}
+            isTrayOpen={activeTray === "threads"}
           />
         ))}
       </Tray>
