@@ -13,7 +13,7 @@
 
 ## TODO
 
-- [ ] Refactor - very bad structure right now
-- [ ] Custom Hooks
+- [X] Refactor - very bad structure right now
+- [X] Custom Hooks
 - [ ] Memoize thread messages for improved performance
-- [ ] Improved error handling
+- [ ] Improved error handling - In API Layer and Components
