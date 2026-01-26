@@ -30,10 +30,10 @@ function Login({ onLogin, goToRegister }: LoginProps) {
     },
   });
 
-  function handleSubmit(e: React.FormEvent) {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     login({ email, password });
-  }
+  };
 
   return (
     <AuthCard onSubmit={handleSubmit} errorMessage={errorMsg}>

@@ -14,7 +14,11 @@ interface MainViewProps {
   onSyncIDs: (threadID: string, projectID: string) => void;
 }
 
-function MainView({ selectedProjectID, selectedThreadID, onSyncIDs }: MainViewProps) {
+function MainView({
+  selectedProjectID,
+  selectedThreadID,
+  onSyncIDs,
+}: MainViewProps) {
   const [chatToolsOpen, setChatToolsOpen] = useState(false);
   const [threadID, setThreadID] = useState<string>("");
   const [selectedModel, setSelectedModel] = useState("Select Model");
@@ -52,12 +56,12 @@ function MainView({ selectedProjectID, selectedThreadID, onSyncIDs }: MainViewPr
         : "new-thread"
       : "thread";
 
-  function handleNewChat() {
+  const handleNewChat = () => {
     clearMessages();
     setThreadID("");
     setSelectedModel("Select Model");
     onSyncIDs("", "");
-  }
+  };
 
   return (
     <Box

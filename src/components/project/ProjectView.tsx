@@ -34,9 +34,9 @@ function ProjectView({
     null,
   );
 
-  function handlePopoverOpenChange(threadID: string, isOpen: boolean) {
+  const handlePopoverOpenChange = (threadID: string, isOpen: boolean) => {
     setOpenPopoverThreadId(isOpen ? threadID : null);
-  }
+  };
 
   const { title, threads, loading, handleThreadDelete } = useProject({
     projectID: selectedProjectID,

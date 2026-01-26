@@ -41,13 +41,13 @@ function ProjectUpdate({ projectID }: ProjectUpdateProps) {
     },
   );
 
-  function handleSubmitProjectUpdate() {
+  const handleSubmitProjectUpdate = () => {
     projectUpdate({
       project_id: projectID,
       title: title,
       instructions: instructions,
     });
-  }
+  };
 
   return (
     <Dialog.Root>

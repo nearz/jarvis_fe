@@ -14,9 +14,9 @@ import { useAsyncService } from "../../hooks";
 function NewProject() {
   const [title, setTitle] = useState("");
 
-  function handleTitleChange(e: React.ChangeEvent<HTMLInputElement>) {
+  const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setTitle(e.target.value);
-  }
+  };
 
   //TODO: Improve error handling in api/services, and hooks will be able to handle these better.
   //TODO: How to present errors?

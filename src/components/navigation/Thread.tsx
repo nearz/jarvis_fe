@@ -42,19 +42,19 @@ function Thread({
     },
   );
 
-  function handleThreadSelect() {
+  const handleThreadSelect = () => {
     onSelectThread(threadID);
     onTrayToggle(trayName);
-  }
+  };
 
-  function handleThreadDelete() {
+  const handleThreadDelete = () => {
     console.log(`Delete: ${threadID}`);
     deleteThread(threadID);
-  }
+  };
 
-  function handleThreadRename() {
+  const handleThreadRename = () => {
     console.log(`Rename: ${threadID}`);
-  }
+  };
 
   return (
     <NavListItem

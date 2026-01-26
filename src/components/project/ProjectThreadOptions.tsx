@@ -20,6 +20,8 @@ function ProjectThreadOptions({
   onOpenChange,
   ...iconButtonProps
 }: ProjectThreadOptsProps) {
+  const [optionsIsOpen, setOptsIsOpen] = useState(false);
+
   const { execute: deleteThread } = useAsyncService(
     historyService.deleteThread,
     {
@@ -36,21 +38,20 @@ function ProjectThreadOptions({
     },
   );
 
-  function handleThreadDelete(e: React.MouseEvent) {
+  const handleThreadDelete = (e: React.MouseEvent) => {
     e.stopPropagation();
     deleteThread(threadID);
-  }
+  };
 
-  function handleThreadRename(e: React.MouseEvent) {
+  const handleThreadRename = (e: React.MouseEvent) => {
     e.stopPropagation();
     console.log(`Rename: ${threadID}`);
-  }
-  const [optionsIsOpen, setOptsIsOpen] = useState(false);
+  };
 
-  function handleOpenChange(details: { open: boolean }) {
+  const handleOpenChange = (details: { open: boolean }) => {
     setOptsIsOpen(details.open);
     onOpenChange?.(details.open);
-  }
+  };
 
   return (
     <Popover.Root

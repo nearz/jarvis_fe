@@ -39,20 +39,20 @@ function Project({
     },
   );
 
-  function handleProjectSelect() {
+  const handleProjectSelect = () => {
     onSelectProject(projectID);
     onTrayToggle(trayName);
-  }
+  };
 
-  function handleProjectDelete() {
+  const handleProjectDelete = () => {
     console.log(`Delete Project: ${projectID}`);
     deleteProject(projectID);
-  }
+  };
 
-  function handleNewChat() {
+  const handleNewChat = () => {
     console.log(`New Chat in Project: ${projectID}`);
     // TODO: Implement new chat in project
-  }
+  };
 
   return (
     <NavListItem

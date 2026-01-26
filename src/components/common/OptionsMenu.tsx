@@ -39,10 +39,10 @@ function OptionsMenu({
 }: OptionsMenuProps) {
   const [isOpen, setIsOpen] = useState(false);
 
-  function handleOpenChange(details: { open: boolean }) {
+  const handleOpenChange = (details: { open: boolean }) => {
     setIsOpen(details.open);
     onOpenChange?.(details.open);
-  }
+  };
 
   // Close menu when parent closes
   useEffect(() => {
@@ -73,7 +73,10 @@ function OptionsMenu({
       </Popover.Trigger>
       <Portal>
         <Popover.Positioner>
-          <Popover.Content w="150px" css={{ "--popover-bg": "colors.gray.700" }}>
+          <Popover.Content
+            w="150px"
+            css={{ "--popover-bg": "colors.gray.700" }}
+          >
             <Popover.Arrow />
             <Popover.Body p={2}>
               {options.map((option) => (

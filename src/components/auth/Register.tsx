@@ -30,14 +30,14 @@ function Register({ onRegister }: RegisterProps) {
     },
   });
 
-  function handleSubmit(e: React.FormEvent) {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     register({
       email: email,
       password: password,
       password_confirm: confirmPassword,
     });
-  }
+  };
 
   return (
     <AuthCard onSubmit={handleSubmit} errorMessage={errorMsg}>
