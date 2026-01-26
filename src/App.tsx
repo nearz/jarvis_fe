@@ -1,8 +1,9 @@
 import { MainNav, MainView } from "./components/navigation";
 import { Login, Register } from "./components/auth";
 import { HStack, Box } from "@chakra-ui/react";
-import { useState } from "react";
 import { ModelsProvider } from "./contexts/modelContext";
+import { Toaster } from "./components/ui/toaster";
+import { useState } from "react";
 
 function App() {
   const [register, setRegister] = useState<boolean>(false);
@@ -28,6 +29,7 @@ function App() {
   if (loggedIn) {
     return (
       <ModelsProvider>
+        <Toaster />
         <Box
           h="100vh"
           w="100vw"

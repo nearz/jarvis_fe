@@ -7,12 +7,20 @@ import {
   Input,
 } from "@chakra-ui/react";
 import { MdOutlineCreateNewFolder } from "react-icons/md";
+import { toaster } from "../ui/toaster";
 import { projectService } from "../../api/services/projectService";
 import { useState } from "react";
 import { useAsyncService } from "../../hooks";
+import { useDisclosure } from "@chakra-ui/react";
 
-function NewProject() {
+interface NewProjectProps {
+  onNewProject: () => void;
+}
+
+function NewProject({ onNewProject }: NewProjectProps) {
   const [title, setTitle] = useState("");
+
+  const { open, onOpen, onClose } = useDisclosure();
 
   const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setTitle(e.target.value);
@@ -23,12 +31,24 @@ function NewProject() {
   const { execute: newProject } = useAsyncService(projectService.newProject, {
     onSuccess: (result) => {
       if (result.success) {
-        console.log("New Project Creation success");
+        toaster.create({
+          title: "New project created",
+          type: "success",
+        });
+        onNewProject();
+        onClose();
       } else {
-        console.log("New Project Creation error");
+        toaster.create({
+          title: "New project creation failed",
+          type: "error",
+        });
       }
     },
     onError: (err) => {
+      toaster.create({
+        title: "New project creation failed",
+        type: "error",
+      });
       console.error("New Project Creation error: ", err);
     },
   });
@@ -41,7 +61,10 @@ function NewProject() {
   };
 
   return (
-    <Dialog.Root>
+    <Dialog.Root
+      open={open}
+      onOpenChange={(e) => (e.open ? onOpen() : onClose())}
+    >
       <Dialog.Trigger asChild>
         <Button
           size="sm"

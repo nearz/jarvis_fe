@@ -10,6 +10,7 @@ import {
   Text,
 } from "@chakra-ui/react";
 import { LuPencil } from "react-icons/lu";
+import { toaster } from "../ui/toaster";
 import { projectService } from "../../api/services/projectService";
 import { useAsyncService, useProject } from "../../hooks";
 
@@ -30,12 +31,22 @@ function ProjectUpdate({ projectID }: ProjectUpdateProps) {
     {
       onSuccess: (result) => {
         if (result.success) {
-          console.log("Update Project Details success");
+          toaster.create({
+            title: "Project updated.",
+            type: "success",
+          });
         } else {
-          console.log("Update Project Details error");
+          toaster.create({
+            title: "Project update failed.",
+            type: "error",
+          });
         }
       },
       onError: (err) => {
+        toaster.create({
+          title: "Project update failed.",
+          type: "error",
+        });
         console.error("Update Project Details:", err);
       },
     },

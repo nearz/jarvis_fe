@@ -21,6 +21,7 @@ function MainNav({ onSelectThread, onSelectProject }: MainNavProps) {
     handleThreadDelete,
     handleProjectDelete,
     setActiveTray,
+    handleNewProject,
   } = useMainNav();
 
   const closeChatsTray = useCallback(() => {
@@ -119,7 +120,7 @@ function MainNav({ onSelectThread, onSelectProject }: MainNavProps) {
         onMouseEnter={projectsTrayCloser.handleMouseEnter}
         onMouseLeave={projectsTrayCloser.handleMouseLeave}
       >
-        <NewProject />
+        <NewProject onNewProject={handleNewProject} />
         {projects.map((project) => (
           <Project
             key={project.project_id}

@@ -19,6 +19,8 @@ interface UseMainNavReturn {
   handleThreadDelete: (threadID: string) => void;
   /** Remove a project from the list after confirmed server deletion */
   handleProjectDelete: (projectID: string) => void;
+  /** Refetch projects when new one is created*/
+  handleNewProject: () => void;
   /** Direct setter for active tray state (useful for delayed close) */
   setActiveTray: React.Dispatch<React.SetStateAction<TrayName | null>>;
 }
@@ -120,6 +122,13 @@ export function useMainNav(): UseMainNavReturn {
   }
 
   /**
+   * Refetch projects list when a new one is created
+   */
+  function handleNewProject() {
+    fetchProjects();
+  }
+
+  /**
    * Fetch all threads from the history service.
    * Updates local state on success.
    * TODO: Logs on failure, need improvement
@@ -160,6 +169,7 @@ export function useMainNav(): UseMainNavReturn {
     handleTrayToggle,
     handleThreadDelete,
     handleProjectDelete,
+    handleNewProject,
     setActiveTray,
   };
 }
