@@ -5,3 +5,4 @@ export { useChatStream } from "./useChatStream";
 export { useThreadLoader } from "./useThreadLoader";
 export { useProject } from "./useProject";
 export { useMainNav } from "./useMainNav";
+export { useChatInput, DEFAULT_MODEL } from "./useChatInput";
