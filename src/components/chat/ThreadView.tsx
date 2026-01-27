@@ -31,8 +31,8 @@ function ThreadView({
 
   // Autoscroll on thread load
   useAutoScroll(scrollToBottom, [msgList]);
-  // Autoscroll on streaming if user is within threshold
-  useAutoScroll(scrollToBottomIfEnabled, [streamingMsg]);
+  // Autoscroll on streaming if user is within threshold (instant to avoid race conditions)
+  useAutoScroll(scrollToBottomIfEnabled, [streamingMsg], { behavior: "instant" });
 
   return (
     <>

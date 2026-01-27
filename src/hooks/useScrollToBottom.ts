@@ -46,6 +46,7 @@ export function useScrollToBottom(
 
   const containerRef = useRef<HTMLDivElement | null>(null);
   const shouldAutoScrollRef = useRef<boolean>(true);
+  const isProgrammaticScrollRef = useRef<boolean>(false);
 
   /**
    * Check if the scroll position is near the bottom of the container.
@@ -66,10 +67,18 @@ export function useScrollToBottom(
   const scrollToBottom = useCallback((behavior: ScrollBehavior = "smooth") => {
     const container = containerRef.current;
     if (container) {
+      isProgrammaticScrollRef.current = true;
+      // Re-enable autoscroll when explicitly scrolling to bottom
+      shouldAutoScrollRef.current = true;
       container.scrollTo({
         top: container.scrollHeight,
         behavior,
       });
+      // Reset after scroll completes
+      const resetDelay = behavior === "smooth" ? 300 : 50;
+      setTimeout(() => {
+        isProgrammaticScrollRef.current = false;
+      }, resetDelay);
     }
   }, []);
 
@@ -89,9 +98,12 @@ export function useScrollToBottom(
   /**
    * Handle scroll events - updates whether auto-scroll should be enabled
    * based on if the user has scrolled away from the bottom.
+   * Ignores scroll events during programmatic scrolls to prevent race conditions.
    */
   const handleScroll = useCallback(() => {
-    shouldAutoScrollRef.current = isNearBottom();
+    if (!isProgrammaticScrollRef.current) {
+      shouldAutoScrollRef.current = isNearBottom();
+    }
   }, [isNearBottom]);
 
   /**
