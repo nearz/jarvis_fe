@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import type { ChatRequest, Message, StreamChunk } from "../api/types";
 import { chatService } from "../api/services/chatService";
 import { projectService } from "../api/services/projectService";
@@ -43,6 +43,20 @@ export function useChatStream({
 }: UseChatStreamOptions): UseChatStreamReturn {
   const [streamingMsg, setStreamingMsg] = useState<string>("");
   const [isStreaming, setIsStreaming] = useState<boolean>(false);
+  const accumulatorRef = useRef("");
+  const rafRef = useRef<number | null>(null);
+  const isMountedRef = useRef(true);
+
+  /** Clean up*/
+  useEffect(() => {
+    isMountedRef.current = true;
+    return () => {
+      isMountedRef.current = false;
+      if (rafRef.current) {
+        cancelAnimationFrame(rafRef.current);
+      }
+    };
+  }, []);
 
   /**
    * Handle streaming tokens from the async-generator
@@ -51,22 +65,32 @@ export function useChatStream({
   async function streamer(
     stream: AsyncGenerator<StreamChunk, unknown, void>,
   ): Promise<string> {
-    let accumulate = "";
     setIsStreaming(true);
+    accumulatorRef.current = "";
     try {
       for await (const chunk of stream) {
         if (chunk.type === "content") {
-          accumulate += chunk.text;
-          setStreamingMsg(accumulate);
+          accumulatorRef.current += chunk.text;
+          if (rafRef.current === null) {
+            rafRef.current = requestAnimationFrame(() => {
+              if (isMountedRef.current) {
+                setStreamingMsg(accumulatorRef.current);
+              }
+              rafRef.current = null;
+            });
+          }
         } else {
           onThreadCreated(chunk.thread_id);
         }
       }
-      return accumulate;
+      setStreamingMsg(accumulatorRef.current);
+      return accumulatorRef.current;
     } catch (err) {
       console.error("Streaming error: ", err);
-      return accumulate;
+      return accumulatorRef.current;
     } finally {
+      if (rafRef.current) cancelAnimationFrame(rafRef.current);
+      rafRef.current = null;
       setIsStreaming(false);
     }
   }
