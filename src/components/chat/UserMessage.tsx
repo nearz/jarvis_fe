@@ -1,4 +1,5 @@
 import { Box, Text } from "@chakra-ui/react";
+import { memo } from "react";
 
 function UserMessage({ content }: { content: string }) {
   return (
@@ -10,4 +11,4 @@ function UserMessage({ content }: { content: string }) {
   );
 }
 
-export default UserMessage;
+export default memo(UserMessage);
