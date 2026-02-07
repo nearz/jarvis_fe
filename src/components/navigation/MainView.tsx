@@ -14,43 +14,40 @@ interface MainViewProps {
   onSyncIDs: (threadID: string, projectID: string) => void;
 }
 
+//TODO: Switching between threads, leaves existing thread msgs until thread is loaded. Ways to improve?
+
 function MainView({
   selectedProjectID,
   selectedThreadID,
   onSyncIDs,
 }: MainViewProps) {
   const [chatToolsOpen, setChatToolsOpen] = useState(false);
-  const [threadID, setThreadID] = useState<string>("");
   const [selectedModel, setSelectedModel] = useState("Select Model");
   const [msgList, setMsgList] = useState<Message[]>([]);
 
   const { streamingMsg, isStreaming, handleSubmitChat, clearMessages } =
     useChatStream({
-      threadID,
+      threadID: selectedThreadID,
       projectID: selectedProjectID,
-      onThreadCreated: (id) => {
-        setThreadID(id);
-        onSyncIDs(id, selectedProjectID);
+      onThreadCreated: (threadID) => {
+        onSyncIDs(threadID, selectedProjectID);
       },
       setMsgList,
     });
 
   useThreadLoader({
     selectedThreadID,
-    currentThreadID: threadID,
-    onThreadLoaded: (messages, id) => {
+    onThreadLoaded: (messages) => {
       setMsgList(messages);
-      setThreadID(id);
     },
     onThreadCleared: () => {
       setMsgList([]);
-      setThreadID("");
     },
   });
 
   // Derive view state
   const viewState: ViewState =
-    threadID === "" && msgList.length === 0
+    selectedThreadID === "" && msgList.length === 0
       ? selectedProjectID !== ""
         ? "project"
         : "new-thread"
@@ -58,7 +55,6 @@ function MainView({
 
   const handleNewChat = () => {
     clearMessages();
-    setThreadID("");
     setSelectedModel("Select Model");
     onSyncIDs("", "");
   };

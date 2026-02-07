@@ -2,16 +2,13 @@ import { useEffect } from "react";
 import type { Message } from "../api/types";
 import { historyService } from "../api/services/historyService";
 
-/*TODO: Loading thread can show new-chat-view when there is network latency.
-How to correc this for better UX? Maybe have loading state here and just show blank if so?*/
-
 interface UseThreadLoaderOptions {
   /** The thread ID selected from navigation/external source */
   selectedThreadID: string;
   /** The current thread ID in local state */
-  currentThreadID: string;
+  // currentThreadID: string;
   /** Callback when thread is successfully loaded */
-  onThreadLoaded: (messages: Message[], threadID: string) => void;
+  onThreadLoaded: (messages: Message[]) => void;
   /** Callback when thread is cleared (no selection) */
   onThreadCleared: () => void;
 }
@@ -29,14 +26,11 @@ interface UseThreadLoaderOptions {
  * ```tsx
  * useThreadLoader({
  *   selectedThreadID,
- *   currentThreadID: threadID,
- *   onThreadLoaded: (messages, id) => {
+ *   onThreadLoaded: (messages) => {
  *     setMsgList(messages);
- *     setThreadID(id);
  *   },
  *   onThreadCleared: () => {
  *     setMsgList([]);
- *     setThreadID("");
  *   },
  * });
  * ```
@@ -44,7 +38,6 @@ interface UseThreadLoaderOptions {
 
 export function useThreadLoader({
   selectedThreadID,
-  currentThreadID,
   onThreadLoaded,
   onThreadCleared,
 }: UseThreadLoaderOptions): void {
@@ -53,8 +46,6 @@ export function useThreadLoader({
       onThreadCleared();
       return;
     }
-
-    if (selectedThreadID === currentThreadID) return;
 
     let cancelled = false;
     loadThreadHistory(selectedThreadID, onThreadLoaded, () => cancelled);
@@ -67,14 +58,14 @@ export function useThreadLoader({
 
 async function loadThreadHistory(
   threadID: string,
-  onLoaded: (msgs: Message[], threadID: string) => void,
+  onLoaded: (msgs: Message[]) => void,
   isCancelled: () => boolean,
 ): Promise<void> {
   try {
     const resp = await historyService.threadHistory(threadID);
     if (isCancelled()) return;
     if (resp.success && resp.messages.length > 0) {
-      onLoaded(resp.messages, threadID);
+      onLoaded(resp.messages);
     }
   } catch (err) {
     if (!isCancelled()) {
