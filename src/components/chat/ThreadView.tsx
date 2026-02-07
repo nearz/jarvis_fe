@@ -1,9 +1,14 @@
-import { Box, Container, List } from "@chakra-ui/react";
+import { Box, Container, IconButton, List } from "@chakra-ui/react";
+import { FaChevronUp, FaChevronDown } from "react-icons/fa6";
 import UserChat from "./UserChat";
 import UserMessage from "./UserMessage";
 import AiMessage from "./AiMessage";
 import type { ChatRequest, Message } from "../../api/types";
-import { useScrollToBottom, useAutoScroll } from "../../hooks";
+import {
+  useScrollToBottom,
+  useAutoScroll,
+  useUserMessageNavigation,
+} from "../../hooks";
 
 interface ThreadViewProps {
   msgList: Message[];
@@ -26,13 +31,22 @@ function ThreadView({
   onModelSelect,
   onSubmitChat,
 }: ThreadViewProps) {
-  const { containerRef, scrollToBottom, scrollToBottomIfEnabled, handleScroll } =
-    useScrollToBottom({ threshold: 85 });
+  const {
+    containerRef,
+    scrollToBottom,
+    scrollToBottomIfEnabled,
+    handleScroll,
+  } = useScrollToBottom({ threshold: 85 });
+
+  const { navigateUp, navigateDown, isAtTop, isAtBottom } =
+    useUserMessageNavigation({ containerRef, scrollToBottom });
 
   // Autoscroll on thread load
   useAutoScroll(scrollToBottom, [msgList]);
   // Autoscroll on streaming if user is within threshold (instant to avoid race conditions)
-  useAutoScroll(scrollToBottomIfEnabled, [streamingMsg], { behavior: "instant" });
+  useAutoScroll(scrollToBottomIfEnabled, [streamingMsg], {
+    behavior: "instant",
+  });
 
   return (
     <>
@@ -62,7 +76,7 @@ function ThreadView({
           <List.Root listStyleType="none" paddingLeft={0}>
             {msgList.map((msg, index) =>
               msg.message_type === "user" ? (
-                <List.Item key={index}>
+                <List.Item key={index} data-user-msg-index={index}>
                   <UserMessage content={msg.content} />
                 </List.Item>
               ) : (
@@ -93,6 +107,37 @@ function ThreadView({
           onSubmitChat={onSubmitChat}
           borderRadiusProps={{ borderTopRadius: 5 }}
         />
+        <Box
+          position="absolute"
+          right={0}
+          bottom={2}
+          transform="translateX(calc(100% + 8px))"
+          display="flex"
+          flexDirection="column"
+          gap={1}
+        >
+          <IconButton
+            aria-label="Previous user message"
+            size="xs"
+            variant="ghost"
+            // _hover={{ bg: isAtTop ? "transparent" : "teal.800" }}
+            _hover={{ bg: "teal.700" }}
+            visibility={isAtTop ? "hidden" : "visible"}
+            onClick={navigateUp}
+          >
+            <FaChevronUp />
+          </IconButton>
+          <IconButton
+            aria-label="Next user message"
+            size="xs"
+            variant="ghost"
+            _hover={{ bg: "teal.700" }}
+            visibility={isAtBottom ? "hidden" : "visible"}
+            onClick={navigateDown}
+          >
+            <FaChevronDown />
+          </IconButton>
+        </Box>
       </Box>
     </>
   );
