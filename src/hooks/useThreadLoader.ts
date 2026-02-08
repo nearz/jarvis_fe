@@ -1,16 +1,19 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import type { Message } from "../api/types";
 import { historyService } from "../api/services/historyService";
 
 interface UseThreadLoaderOptions {
   /** The thread ID selected from navigation/external source */
   selectedThreadID: string;
-  /** The current thread ID in local state */
-  // currentThreadID: string;
   /** Callback when thread is successfully loaded */
   onThreadLoaded: (messages: Message[]) => void;
   /** Callback when thread is cleared (no selection) */
   onThreadCleared: () => void;
+}
+
+interface UseThreadLoaderReturn {
+  /** Whether thread data is currently being fetched */
+  loading: boolean;
 }
 
 /**
@@ -40,7 +43,8 @@ export function useThreadLoader({
   selectedThreadID,
   onThreadLoaded,
   onThreadCleared,
-}: UseThreadLoaderOptions): void {
+}: UseThreadLoaderOptions): UseThreadLoaderReturn {
+  const [loading, setLoading] = useState(false);
   useEffect(() => {
     if (!selectedThreadID) {
       onThreadCleared();
@@ -48,20 +52,28 @@ export function useThreadLoader({
     }
 
     let cancelled = false;
-    loadThreadHistory(selectedThreadID, onThreadLoaded, () => cancelled);
+    loadThreadHistory(
+      selectedThreadID,
+      onThreadLoaded,
+      setLoading,
+      () => cancelled,
+    );
 
     return () => {
       cancelled = true;
     };
   }, [selectedThreadID]);
+  return { loading };
 }
 
 async function loadThreadHistory(
   threadID: string,
   onLoaded: (msgs: Message[]) => void,
+  setLoading: (isLoading: boolean) => void,
   isCancelled: () => boolean,
 ): Promise<void> {
   try {
+    setLoading(true);
     const resp = await historyService.threadHistory(threadID);
     if (isCancelled()) return;
     if (resp.success && resp.messages.length > 0) {
@@ -71,5 +83,7 @@ async function loadThreadHistory(
     if (!isCancelled()) {
       console.log("Error loading thread", err);
     }
+  } finally {
+    setLoading(false);
   }
 }

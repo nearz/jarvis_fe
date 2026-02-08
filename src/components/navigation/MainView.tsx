@@ -35,7 +35,7 @@ function MainView({
       setMsgList,
     });
 
-  useThreadLoader({
+  const { loading: threadLoading } = useThreadLoader({
     selectedThreadID,
     onThreadLoaded: (messages) => {
       setMsgList(messages);
@@ -44,6 +44,8 @@ function MainView({
       setMsgList([]);
     },
   });
+
+  console.log(threadLoading);
 
   // Derive view state
   const viewState: ViewState =
