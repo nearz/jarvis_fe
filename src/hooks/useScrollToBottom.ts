@@ -3,11 +3,11 @@ import { useRef, useCallback, useEffect } from "react";
 interface UseScrollToBottomOptions {
   /** Distance from bottom (in pixels) to consider "near bottom". Default: 150 */
   threshold?: number;
+  /** Ref to attach to the scrollable container element */
+  containerRef: React.RefObject<HTMLDivElement | null>;
 }
 
 interface UseScrollToBottomReturn {
-  /** Ref to attach to the scrollable container element */
-  containerRef: React.RefObject<HTMLDivElement | null>;
   /** Call this on the container's onScroll event */
   handleScroll: () => void;
   /** Programmatically scroll to bottom */
@@ -40,11 +40,10 @@ interface UseScrollToBottomReturn {
  * ```
  */
 export function useScrollToBottom(
-  options: UseScrollToBottomOptions = {},
+  options: UseScrollToBottomOptions,
 ): UseScrollToBottomReturn {
-  const { threshold = 150 } = options;
+  const { threshold = 150, containerRef } = options;
 
-  const containerRef = useRef<HTMLDivElement | null>(null);
   const shouldAutoScrollRef = useRef<boolean>(true);
   const isProgrammaticScrollRef = useRef<boolean>(false);
 
@@ -114,7 +113,6 @@ export function useScrollToBottom(
   }, []);
 
   return {
-    containerRef,
     handleScroll,
     scrollToBottom,
     scrollToBottomIfEnabled,

@@ -9,12 +9,15 @@ import {
   useAutoScroll,
   useUserMessageNavigation,
 } from "../../hooks";
+import { useEffect } from "react";
 
 interface ThreadViewProps {
   msgList: Message[];
   streamingMsg: string;
   isStreaming: boolean;
   selectedModel: string;
+  selectedMarkID: string;
+  containerRef: React.RefObject<HTMLDivElement | null>;
   onModelSelect: (model: string) => void;
   onSubmitChat: (request: ChatRequest) => void;
 }
@@ -28,19 +31,21 @@ function ThreadView({
   streamingMsg,
   isStreaming,
   selectedModel,
+  selectedMarkID,
+  containerRef,
   onModelSelect,
   onSubmitChat,
 }: ThreadViewProps) {
-  const {
-    containerRef,
-    scrollToBottom,
-    scrollToBottomIfEnabled,
-    handleScroll,
-  } = useScrollToBottom({ threshold: 85 });
+  const { scrollToBottom, scrollToBottomIfEnabled, handleScroll } =
+    useScrollToBottom({ threshold: 85, containerRef });
 
-  const { navigateUp, navigateDown, isAtTop, isAtBottom } =
+  const { navigateUp, navigateDown, navigateByID, isAtTop, isAtBottom } =
     useUserMessageNavigation({ containerRef, scrollToBottom });
 
+  useEffect(() => {
+    if (!selectedMarkID) return;
+    navigateByID(selectedMarkID);
+  }, [selectedMarkID]);
   // Autoscroll on thread load
   useAutoScroll(scrollToBottom, [msgList]);
   // Autoscroll on streaming if user is within threshold (instant to avoid race conditions)
@@ -77,17 +82,17 @@ function ThreadView({
             {msgList.map((msg, index) =>
               msg.message_type === "user" ? (
                 <List.Item key={index} data-user-msg-index={index}>
-                  <UserMessage content={msg.content} />
+                  <UserMessage msgID={msg.message_id} content={msg.content} />
                 </List.Item>
               ) : (
-                <List.Item key={index}>
-                  <AiMessage content={msg.content} />
+                <List.Item key={index} data-ai-msg-index={index}>
+                  <AiMessage msgID={msg.message_id} content={msg.content} />
                 </List.Item>
               ),
             )}
             {isStreaming && (
               <List.Item>
-                <AiMessage content={streamingMsg} />
+                <AiMessage msgID={"temp-streaming"} content={streamingMsg} />
               </List.Item>
             )}
           </List.Root>

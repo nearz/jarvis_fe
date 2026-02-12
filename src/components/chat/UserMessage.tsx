@@ -1,7 +1,12 @@
 import { Box, Text } from "@chakra-ui/react";
 import { memo } from "react";
 
-function UserMessage({ content }: { content: string }) {
+interface UserMessageProps {
+  content: string;
+  msgID: string;
+}
+
+function UserMessage({ content, msgID }: UserMessageProps) {
   return (
     <Box
       bg="teal.700"
@@ -13,6 +18,9 @@ function UserMessage({ content }: { content: string }) {
       mt={8}
       mb={6}
       borderRadius="md"
+      data-thread-msg-type="user"
+      id={msgID}
+      data-ct-mark={msgID}
     >
       <Text textStyle="l" color="gray.200">
         {content}

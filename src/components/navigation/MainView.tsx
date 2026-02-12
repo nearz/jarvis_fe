@@ -4,7 +4,7 @@ import ChatTools from "../chat/ChatTools";
 import NewThreadView from "../chat/NewThreadView";
 import ThreadView from "../chat/ThreadView";
 import { ProjectView } from "../project";
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { useChatStream, useThreadLoader } from "../../hooks";
 import type { Message, ViewState } from "../../api/types";
 
@@ -16,11 +16,22 @@ interface MainViewProps {
 
 //TODO: Switching between threads, leaves existing thread msgs until thread is loaded. Ways to improve?
 
+export type ThreadMark = {
+  type: string;
+  elemID: string;
+  content: string;
+};
+
 function MainView({
   selectedProjectID,
   selectedThreadID,
   onSyncIDs,
 }: MainViewProps) {
+  // -> TODO: Probably move to custom hook
+  const threadContainerRef = useRef<HTMLDivElement | null>(null);
+  const [selectedMarkID, setSelectedMarkID] = useState("");
+
+  // <- TODO: Probably move to custom hook
   const [chatToolsOpen, setChatToolsOpen] = useState(false);
   const [selectedModel, setSelectedModel] = useState("Select Model");
   const [msgList, setMsgList] = useState<Message[]>([]);
@@ -45,7 +56,35 @@ function MainView({
     },
   });
 
-  console.log(threadLoading);
+  // -> TODO: Probably move to custom hook
+  //How to handle headers?
+  //pass to chat tools component
+  //Do I need to check loading for Thread Loader?
+  //Really should I be checking isStreaming?
+  //Should be a handler for button to toggle chat tools.
+  //Should ref be cleared on new chat and new load?
+  //Chat tools renders just is hidden. Can I improve this, only render on open?
+  const threadMarks = useRef<ThreadMark[]>([]);
+  const handleChatToolsOpen = () => {
+    if (!threadLoading && !isStreaming) {
+      if (!chatToolsOpen) {
+        const container = threadContainerRef.current;
+        if (!container) return;
+        const ctMarks =
+          container.querySelectorAll<HTMLElement>("[data-ct-mark]");
+        threadMarks.current = [];
+        ctMarks.forEach((el) => {
+          threadMarks.current.push({
+            type: el.dataset.threadMsgType ?? "",
+            elemID: el.dataset.ctMark ?? "",
+            content: el.textContent ?? "",
+          });
+        });
+      }
+      setChatToolsOpen(!chatToolsOpen);
+    }
+  };
+  // <- TODO: Move to custom hook
 
   // Derive view state
   const viewState: ViewState =
@@ -89,7 +128,7 @@ function MainView({
           zIndex="10"
           viewState={viewState}
           onNewChat={handleNewChat}
-          onChatToolsToggle={() => setChatToolsOpen(!chatToolsOpen)}
+          onChatToolsToggle={handleChatToolsOpen}
         />
 
         {viewState === "new-thread" && (
@@ -116,6 +155,8 @@ function MainView({
             streamingMsg={streamingMsg}
             isStreaming={isStreaming}
             selectedModel={selectedModel}
+            selectedMarkID={selectedMarkID}
+            containerRef={threadContainerRef}
             onModelSelect={setSelectedModel}
             onSubmitChat={handleSubmitChat}
           />
@@ -123,6 +164,8 @@ function MainView({
       </Box>
 
       <ChatTools
+        onMarkID={setSelectedMarkID}
+        threadMarks={threadMarks.current}
         transition="all 0.3s"
         transform={chatToolsOpen ? "translateX(0)" : "translateX(100%)"}
       />

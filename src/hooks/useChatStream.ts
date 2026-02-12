@@ -17,6 +17,9 @@ interface UseChatStreamReturn {
   clearMessages: () => void;
 }
 
+//TODO: Set temp IDs on new user chat or completed ai msg.
+//When loaded actual IDs will populate.
+
 /**
  * Hook to manage chat message streaming and submission.
  *
@@ -110,6 +113,7 @@ export function useChatStream({
           content: fullContent,
           llm: chatRequest.llm,
           message_type: "ai",
+          message_id: "temp-ai-" + crypto.randomUUID(),
         },
       ]);
     } catch (err) {
@@ -130,6 +134,7 @@ export function useChatStream({
         content: chatRequest.message,
         llm: chatRequest.llm,
         message_type: "user",
+        message_id: "temp-user" + crypto.randomUUID(),
       },
     ]);
     void submitChat(chatRequest);

@@ -12,6 +12,8 @@ interface UseUserMessageNavigationReturn {
   navigateUp: () => void;
   /** Navigate to the next user message, or scroll to bottom if at the last */
   navigateDown: () => void;
+  /** Navigate to the next user message, or scroll to bottom if at the last */
+  navigateByID: (markID: string) => void;
   /** Whether the scroll container is at the top */
   isAtTop: boolean;
   /** Whether the scroll container is at the bottom */
@@ -109,6 +111,17 @@ export function useUserMessageNavigation({
     [containerRef],
   );
 
+  const navigateByID = useCallback(
+    (markID: string) => {
+      const container = containerRef.current;
+      if (!container) return;
+      const elem = container.querySelector<HTMLElement>(`#${markID}`);
+      if (!elem) return;
+      scrollToElement(elem);
+    },
+    [containerRef],
+  );
+
   /**
    * Navigate to the previous user message in the thread.
    * If the current user message is not visible (scrolled out of view),
@@ -164,5 +177,5 @@ export function useUserMessageNavigation({
     scrollToBottom,
   ]);
 
-  return { navigateUp, navigateDown, isAtTop, isAtBottom };
+  return { navigateUp, navigateDown, navigateByID, isAtTop, isAtBottom };
 }
