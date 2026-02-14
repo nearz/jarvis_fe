@@ -1,11 +1,11 @@
 import { Box } from "@chakra-ui/react";
 import MainViewHeader from "./MainViewHeader";
-import ChatTools from "../chat/ChatTools";
+import Tools from "../chat/Tools";
 import NewThreadView from "../chat/NewThreadView";
 import ThreadView from "../chat/ThreadView";
 import { ProjectView } from "../project";
-import { useState, useRef } from "react";
-import { useChatStream, useThreadLoader } from "../../hooks";
+import { useState, useRef, useEffect } from "react";
+import { useChatStream, useThreadLoader, useTools } from "../../hooks";
 import type { Message, ViewState } from "../../api/types";
 
 interface MainViewProps {
@@ -27,14 +27,17 @@ function MainView({
   selectedThreadID,
   onSyncIDs,
 }: MainViewProps) {
-  // -> TODO: Probably move to custom hook
   const threadContainerRef = useRef<HTMLDivElement | null>(null);
-  const [selectedMarkID, setSelectedMarkID] = useState("");
-
-  // <- TODO: Probably move to custom hook
-  const [chatToolsOpen, setChatToolsOpen] = useState(false);
   const [selectedModel, setSelectedModel] = useState("Select Model");
   const [msgList, setMsgList] = useState<Message[]>([]);
+
+  // Derive view state
+  const viewState: ViewState =
+    selectedThreadID === "" && msgList.length === 0
+      ? selectedProjectID !== ""
+        ? "project"
+        : "new-thread"
+      : "thread";
 
   const { streamingMsg, isStreaming, handleSubmitChat, clearMessages } =
     useChatStream({
@@ -46,7 +49,7 @@ function MainView({
       setMsgList,
     });
 
-  const { loading: threadLoading } = useThreadLoader({
+  useThreadLoader({
     selectedThreadID,
     onThreadLoaded: (messages) => {
       setMsgList(messages);
@@ -56,43 +59,15 @@ function MainView({
     },
   });
 
-  // -> TODO: Probably move to custom hook
-  //How to handle headers?
-  //pass to chat tools component
-  //Do I need to check loading for Thread Loader?
-  //Really should I be checking isStreaming?
-  //Should be a handler for button to toggle chat tools.
-  //Should ref be cleared on new chat and new load?
-  //Chat tools renders just is hidden. Can I improve this, only render on open?
-  const threadMarks = useRef<ThreadMark[]>([]);
-  const handleChatToolsOpen = () => {
-    if (!threadLoading && !isStreaming) {
-      if (!chatToolsOpen) {
-        const container = threadContainerRef.current;
-        if (!container) return;
-        const ctMarks =
-          container.querySelectorAll<HTMLElement>("[data-ct-mark]");
-        threadMarks.current = [];
-        ctMarks.forEach((el) => {
-          threadMarks.current.push({
-            type: el.dataset.threadMsgType ?? "",
-            elemID: el.dataset.ctMark ?? "",
-            content: el.textContent ?? "",
-          });
-        });
-      }
-      setChatToolsOpen(!chatToolsOpen);
-    }
-  };
-  // <- TODO: Move to custom hook
+  const { toolsOpen, toggleTools, closeTools, threadMarks, scrollToMark } =
+    useTools({ threadContainerRef, msgList, isStreaming });
 
-  // Derive view state
-  const viewState: ViewState =
-    selectedThreadID === "" && msgList.length === 0
-      ? selectedProjectID !== ""
-        ? "project"
-        : "new-thread"
-      : "thread";
+  // Close Tools when leaving the thread view
+  useEffect(() => {
+    if (viewState !== "thread") {
+      closeTools();
+    }
+  }, [viewState, closeTools]);
 
   const handleNewChat = () => {
     clearMessages();
@@ -103,7 +78,7 @@ function MainView({
   return (
     <Box
       display="grid"
-      gridTemplateColumns={chatToolsOpen ? "1fr 300px" : "1fr 0px"}
+      gridTemplateColumns={toolsOpen ? "1fr 300px" : "1fr 0px"}
       h="100%"
       w="100%"
       flex="1"
@@ -125,10 +100,10 @@ function MainView({
           right="0"
           w="40px"
           mr="20px"
-          zIndex="10"
+          zIndex="1"
           viewState={viewState}
           onNewChat={handleNewChat}
-          onChatToolsToggle={handleChatToolsOpen}
+          onToolsToggle={toggleTools}
         />
 
         {viewState === "new-thread" && (
@@ -155,7 +130,6 @@ function MainView({
             streamingMsg={streamingMsg}
             isStreaming={isStreaming}
             selectedModel={selectedModel}
-            selectedMarkID={selectedMarkID}
             containerRef={threadContainerRef}
             onModelSelect={setSelectedModel}
             onSubmitChat={handleSubmitChat}
@@ -163,11 +137,11 @@ function MainView({
         )}
       </Box>
 
-      <ChatTools
-        onMarkID={setSelectedMarkID}
-        threadMarks={threadMarks.current}
+      <Tools
+        onMarkClick={scrollToMark}
+        threadMarks={threadMarks}
         transition="all 0.3s"
-        transform={chatToolsOpen ? "translateX(0)" : "translateX(100%)"}
+        transform={toolsOpen ? "translateX(0)" : "translateX(100%)"}
       />
     </Box>
   );

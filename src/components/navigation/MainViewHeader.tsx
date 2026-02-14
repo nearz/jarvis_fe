@@ -5,13 +5,13 @@ import type { ViewState } from "../../api/types";
 
 interface MainViewHeaderProps extends StackProps {
   viewState: ViewState;
-  onChatToolsToggle: () => void;
+  onToolsToggle: () => void;
   onNewChat: () => void;
 }
 
 function MainViewHeader({
   viewState,
-  onChatToolsToggle,
+  onToolsToggle,
   onNewChat,
   ...rest
 }: MainViewHeaderProps) {
@@ -43,7 +43,7 @@ function MainViewHeader({
           _hover={{ bg: "teal.500" }}
           size="xs"
           variant="solid"
-          onClick={onChatToolsToggle}
+          onClick={onToolsToggle}
         >
           <Icon>
             <FaPlus />

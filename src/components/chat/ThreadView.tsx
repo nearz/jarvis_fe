@@ -9,14 +9,12 @@ import {
   useAutoScroll,
   useUserMessageNavigation,
 } from "../../hooks";
-import { useEffect } from "react";
 
 interface ThreadViewProps {
   msgList: Message[];
   streamingMsg: string;
   isStreaming: boolean;
   selectedModel: string;
-  selectedMarkID: string;
   containerRef: React.RefObject<HTMLDivElement | null>;
   onModelSelect: (model: string) => void;
   onSubmitChat: (request: ChatRequest) => void;
@@ -31,7 +29,6 @@ function ThreadView({
   streamingMsg,
   isStreaming,
   selectedModel,
-  selectedMarkID,
   containerRef,
   onModelSelect,
   onSubmitChat,
@@ -39,13 +36,9 @@ function ThreadView({
   const { scrollToBottom, scrollToBottomIfEnabled, handleScroll } =
     useScrollToBottom({ threshold: 85, containerRef });
 
-  const { navigateUp, navigateDown, navigateByID, isAtTop, isAtBottom } =
+  const { navigateUp, navigateDown, isAtTop, isAtBottom } =
     useUserMessageNavigation({ containerRef, scrollToBottom });
 
-  useEffect(() => {
-    if (!selectedMarkID) return;
-    navigateByID(selectedMarkID);
-  }, [selectedMarkID]);
   // Autoscroll on thread load
   useAutoScroll(scrollToBottom, [msgList]);
   // Autoscroll on streaming if user is within threshold (instant to avoid race conditions)
@@ -121,27 +114,31 @@ function ThreadView({
           flexDirection="column"
           gap={1}
         >
-          <IconButton
-            aria-label="Previous user message"
-            size="xs"
-            variant="ghost"
-            // _hover={{ bg: isAtTop ? "transparent" : "teal.800" }}
-            _hover={{ bg: "teal.700" }}
-            visibility={isAtTop ? "hidden" : "visible"}
-            onClick={navigateUp}
-          >
-            <FaChevronUp />
-          </IconButton>
-          <IconButton
-            aria-label="Next user message"
-            size="xs"
-            variant="ghost"
-            _hover={{ bg: "teal.700" }}
-            visibility={isAtBottom ? "hidden" : "visible"}
-            onClick={navigateDown}
-          >
-            <FaChevronDown />
-          </IconButton>
+          {!isStreaming && (
+            <>
+              <IconButton
+                aria-label="Previous user message"
+                size="xs"
+                variant="ghost"
+                // _hover={{ bg: isAtTop ? "transparent" : "teal.800" }}
+                _hover={{ bg: "teal.700" }}
+                visibility={isAtTop ? "hidden" : "visible"}
+                onClick={navigateUp}
+              >
+                <FaChevronUp />
+              </IconButton>
+              <IconButton
+                aria-label="Next user message"
+                size="xs"
+                variant="ghost"
+                _hover={{ bg: "teal.700" }}
+                visibility={isAtBottom ? "hidden" : "visible"}
+                onClick={navigateDown}
+              >
+                <FaChevronDown />
+              </IconButton>
+            </>
+          )}
         </Box>
       </Box>
     </>

@@ -1,4 +1,4 @@
-export { default as ChatTools } from "./ChatTools";
+export { default as Tools } from "./Tools";
 export { default as UserChat } from "./UserChat";
 export { default as UserMessage } from "./UserMessage";
 export { default as AiMessage } from "./AiMessage";

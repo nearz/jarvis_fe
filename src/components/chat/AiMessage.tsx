@@ -9,9 +9,26 @@ import "highlight.js/styles/github-dark-dimmed.min.css";
 function createMarkdownComponents(msgID: string): Components {
   let headingIndex = 0;
 
-  const HeadingHandler = ({ children }: { children?: React.ReactNode }) => {
+  const h1Handler = ({ children }: { children?: React.ReactNode }) => {
     const currentIndex = headingIndex++;
-    const headingId = `${msgID}-h-${currentIndex}`;
+    const headingId = `${msgID}-h1-${currentIndex}`;
+    return (
+      <Text
+        fontSize="2xl"
+        fontWeight="bold"
+        my={2}
+        id={headingId}
+        data-ct-mark={headingId}
+        data-thread-msg-type="ai-h1"
+      >
+        {children}
+      </Text>
+    );
+  };
+
+  const h2Handler = ({ children }: { children?: React.ReactNode }) => {
+    const currentIndex = headingIndex++;
+    const headingId = `${msgID}-h2-${currentIndex}`;
     return (
       <Text
         fontSize="xl"
@@ -19,7 +36,7 @@ function createMarkdownComponents(msgID: string): Components {
         my={2}
         id={headingId}
         data-ct-mark={headingId}
-        data-thread-msg-type="ai-header"
+        data-thread-msg-type="ai-h2"
       >
         {children}
       </Text>
@@ -38,9 +55,13 @@ function createMarkdownComponents(msgID: string): Components {
       </Code>
     ),
     hr: () => <Separator my={6} borderColor="gray.500" size="sm" />,
-    h1: HeadingHandler,
-    h2: HeadingHandler,
-    h3: HeadingHandler,
+    h1: h1Handler,
+    h2: h2Handler,
+    h3: ({ children }) => (
+      <Text fontSize="l" fontWeight="bold" my={2}>
+        {children}
+      </Text>
+    ),
     ul: ({ children }) => (
       <Box as="ul" pl={6} my={2} listStyleType="disc">
         {children}
