@@ -44,8 +44,8 @@ const ModelSelectPopover = ({
       </Popover.Trigger>
       <Portal>
         <Popover.Positioner>
-          <Popover.Content h="500px" w="250px" bg="gray.800">
-            <Popover.Body p="10px">
+          <Popover.Content h="500px" w="350px" bg="gray.800">
+            <Popover.Body p={0}>
               <ModelSelect onModelSelect={handleModelSelect} />
             </Popover.Body>
             <Popover.CloseTrigger />
