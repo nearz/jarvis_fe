@@ -62,7 +62,8 @@ export function useTools({
       const offset =
         el.getBoundingClientRect().top -
         container.getBoundingClientRect().top +
-        container.scrollTop;
+        container.scrollTop -
+        10;
       container.scrollTo({ top: offset, behavior: "smooth" });
     },
     [threadContainerRef],
