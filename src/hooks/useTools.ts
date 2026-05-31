@@ -1,6 +1,6 @@
 import { useState, useCallback } from "react";
 import { useThreadMarks } from "./useThreadMarks";
-import type { ThreadMark } from "../components/navigation/MainView";
+import type { ThreadMark } from "../components/navigation/types";
 import type { Message } from "../api/types";
 
 interface UseToolsOptions {

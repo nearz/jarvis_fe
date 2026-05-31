@@ -1,7 +1,16 @@
-import { Textarea, Container, VStack } from "@chakra-ui/react";
+import {
+  Textarea,
+  Container,
+  VStack,
+  Box,
+  HStack,
+  Text,
+  CloseButton,
+} from "@chakra-ui/react";
 import { useChatInput } from "../../hooks";
 import ChatToolbar from "./ChatToolbar";
 import type { ChatRequest } from "../../api/types";
+import { truncate } from "../utils/utils";
 
 interface BorderRadiusProps {
   borderRadius?: number | string;
@@ -11,6 +20,8 @@ interface BorderRadiusProps {
 interface UserChatProps {
   onModelSelect: (name: string) => void;
   onSubmitChat: (chatRequest: ChatRequest) => void;
+  onRemoveAttached?: (emptyString: string) => void;
+  attachedFromThread?: string;
   placeholder?: string;
   selectedModel: string;
   borderRadiusProps?: BorderRadiusProps;
@@ -19,6 +30,8 @@ interface UserChatProps {
 const UserChat = ({
   onModelSelect,
   onSubmitChat,
+  onRemoveAttached,
+  attachedFromThread,
   borderRadiusProps,
   placeholder,
   selectedModel,
@@ -30,11 +43,28 @@ const UserChat = ({
     handleMsgUpdate,
     handleChatSubmit,
     handleChatKeyDown,
-  } = useChatInput({ selectedModel, onSubmitChat });
+  } = useChatInput({
+    selectedModel,
+    onSubmitChat,
+    attachedFromThread,
+    onRemoveAttached,
+  });
 
   return (
     <Container p={1} {...borderRadiusProps} bg="gray.800">
       <VStack>
+        {attachedFromThread && (
+          <Box p={2} bg="gray.700" w="100%" {...borderRadiusProps}>
+            <HStack justify="space-between" alignItems="flex-start">
+              <Text>{truncate(attachedFromThread, 300)}</Text>
+              <CloseButton
+                size="2xs"
+                variant="outline"
+                onClick={() => onRemoveAttached?.("")}
+              />
+            </HStack>
+          </Box>
+        )}
         <Textarea
           ref={textAreaRef}
           id="user-chat"

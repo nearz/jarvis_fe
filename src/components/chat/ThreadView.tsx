@@ -1,4 +1,4 @@
-import { Box, Container, IconButton, List } from "@chakra-ui/react";
+import { Box, Container, IconButton, List, Button } from "@chakra-ui/react";
 import { FaChevronUp, FaChevronDown } from "react-icons/fa6";
 import UserChat from "./UserChat";
 import UserMessage from "./UserMessage";
@@ -9,6 +9,7 @@ import {
   useAutoScroll,
   useUserMessageNavigation,
 } from "../../hooks";
+import { useState, useEffect } from "react";
 
 interface ThreadViewProps {
   msgList: Message[];
@@ -46,6 +47,56 @@ function ThreadView({
     behavior: "instant",
   });
 
+  //TODO: Use state? How would I change if selection is removed?
+  const [isHilighted, setIsHilighted] = useState(false);
+  const [hlx, setHLX] = useState(0);
+  const [hly, setHLY] = useState(0);
+  const [attachedText, setAttachedText] = useState("");
+
+  const clearHighlights = () => {
+    const sel = window.getSelection();
+    if (sel) {
+      sel.removeAllRanges();
+    }
+    setIsHilighted(false);
+    setHLY(0);
+    setHLX(0);
+  };
+
+  const handleHilighted = () => {
+    const sel = window.getSelection();
+    if (sel && !sel.isCollapsed && sel.rangeCount > 0 && containerRef.current) {
+      const range = sel.getRangeAt(0);
+      setAttachedText(range.toString());
+      clearHighlights();
+    }
+  };
+
+  const attachHilightBtn = () => {
+    const sel = window.getSelection();
+    if (sel && !sel.isCollapsed && sel.rangeCount > 0 && containerRef.current) {
+      const range = sel.getRangeAt(0);
+      const rects = range.getClientRects();
+      const fistRect = rects[0];
+      const parentRect = containerRef.current?.getBoundingClientRect();
+      setIsHilighted(true);
+      setHLX(fistRect.x - parentRect.x);
+      setHLY(fistRect.y - parentRect.y + containerRef.current.scrollTop);
+    }
+  };
+
+  useEffect(() => {
+    const handleSelectionChange = () => {
+      const sel = window.getSelection();
+      if (!sel || sel.isCollapsed) {
+        setIsHilighted(false);
+      }
+    };
+    document.addEventListener("selectionchange", handleSelectionChange);
+    return () =>
+      document.removeEventListener("selectionchange", handleSelectionChange);
+  }, []);
+
   return (
     <>
       <Box
@@ -56,11 +107,28 @@ function ThreadView({
         position="relative"
         overflowY="auto"
         overflowX="hidden"
+        onMouseLeave={clearHighlights}
         css={{
           scrollbarColor:
             "var(--chakra-colors-gray-600) var(--chakra-colors-gray-900)",
         }}
       >
+        {isHilighted && (
+          <Button
+            position="absolute"
+            bg="teal.600"
+            _hover={{ bg: "teal.500" }}
+            color="white"
+            fontWeight="bold"
+            top={hly}
+            left={hlx}
+            zIndex={10}
+            transform="translate(0%, -110%)"
+            onClick={handleHilighted}
+          >
+            Ask Jarvis
+          </Button>
+        )}
         <Container
           position="absolute"
           left="50%"
@@ -70,12 +138,17 @@ function ThreadView({
           maxW="3xl"
           w="3xl"
           paddingBottom="150px"
+          onMouseUp={attachHilightBtn}
         >
           <List.Root listStyleType="none" paddingLeft={0}>
             {msgList.map((msg, index) =>
               msg.message_type === "user" ? (
                 <List.Item key={index} data-user-msg-index={index}>
-                  <UserMessage msgID={msg.message_id} content={msg.content} />
+                  <UserMessage
+                    msgID={msg.message_id}
+                    content={msg.content}
+                    attachedContext={msg.attached_context}
+                  />
                 </List.Item>
               ) : (
                 <List.Item key={index} data-ai-msg-index={index}>
@@ -100,9 +173,11 @@ function ThreadView({
         transform="translate(-50%)"
       >
         <UserChat
+          attachedFromThread={attachedText}
           selectedModel={selectedModel}
           onModelSelect={onModelSelect}
           onSubmitChat={onSubmitChat}
+          onRemoveAttached={setAttachedText}
           borderRadiusProps={{ borderTopRadius: 5 }}
         />
         <Box

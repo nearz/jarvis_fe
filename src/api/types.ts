@@ -56,6 +56,8 @@ export interface RegisterResult {
 export interface ChatRequest {
   /** The user's message content */
   message: string;
+  /** Text attached by user from existing thread msgs */
+  attached_context?: string;
   /** The language model to use for generating a response */
   llm: string;
 }
@@ -132,6 +134,8 @@ export interface Message {
   thread_id?: string;
   /** ISO 8601 timestamp of when the message was created */
   created_at?: string;
+  /** Thread message history attached by user */
+  attached_context?: string;
 }
 
 /**

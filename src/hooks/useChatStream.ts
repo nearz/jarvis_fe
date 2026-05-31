@@ -135,6 +135,7 @@ export function useChatStream({
         llm: chatRequest.llm,
         message_type: "user",
         message_id: "temp-user" + crypto.randomUUID(),
+        attached_context: chatRequest.attached_context,
       },
     ]);
     void submitChat(chatRequest);

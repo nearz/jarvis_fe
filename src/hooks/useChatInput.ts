@@ -7,8 +7,12 @@ export const DEFAULT_MODEL = "Select Model";
 interface UseChatInputOptions {
   /** The currently selected model name */
   selectedModel: string;
+  /** The attached thread history text */
+  attachedFromThread?: string;
   /** Callback fired when chat is submitted */
   onSubmitChat: (chatRequest: ChatRequest) => void;
+  /** Callback to remove attached context when chat is submitted */
+  onRemoveAttached?: (emptyString: string) => void;
 }
 
 interface UseChatInputReturn {
@@ -64,7 +68,9 @@ interface UseChatInputReturn {
  */
 export const useChatInput = ({
   selectedModel,
+  attachedFromThread,
   onSubmitChat,
+  onRemoveAttached,
 }: UseChatInputOptions): UseChatInputReturn => {
   const [chatMsg, setChatMsg] = useState("");
   const textAreaRef = useRef<HTMLTextAreaElement>(null);
@@ -86,7 +92,18 @@ export const useChatInput = ({
 
   const handleChatSubmit = useCallback(() => {
     if (chatMsg.trim() && selectedModel.trim() !== DEFAULT_MODEL) {
-      onSubmitChat({ message: chatMsg, llm: selectedModel });
+      if (attachedFromThread) {
+        onSubmitChat({
+          message: chatMsg,
+          attached_context: attachedFromThread,
+          llm: selectedModel,
+        });
+      } else {
+        onSubmitChat({ message: chatMsg, llm: selectedModel });
+      }
+      if (attachedFromThread && onRemoveAttached) {
+        onRemoveAttached("");
+      }
       setChatMsg("");
       textAreaRef.current?.focus();
     }

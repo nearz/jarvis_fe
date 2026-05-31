@@ -16,11 +16,7 @@ interface MainViewProps {
 
 //TODO: Switching between threads, leaves existing thread msgs until thread is loaded. Ways to improve?
 
-export type ThreadMark = {
-  type: string;
-  elemID: string;
-  content: string;
-};
+const TOOLS_WIDTH = "350px";
 
 function MainView({
   selectedProjectID,
@@ -78,7 +74,7 @@ function MainView({
   return (
     <Box
       display="grid"
-      gridTemplateColumns={toolsOpen ? "1fr 300px" : "1fr 0px"}
+      gridTemplateColumns={toolsOpen ? `1fr ${TOOLS_WIDTH}` : "1fr 0px"}
       h="100%"
       w="100%"
       flex="1"
@@ -138,6 +134,7 @@ function MainView({
       </Box>
 
       <Tools
+        toolsWidth={TOOLS_WIDTH}
         onMarkClick={scrollToMark}
         threadMarks={threadMarks}
         transition="all 0.3s"
